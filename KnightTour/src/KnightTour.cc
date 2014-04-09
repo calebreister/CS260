@@ -7,36 +7,48 @@
 
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <cmath>
 using namespace std;
 
 struct Board {
         Board();
         int size = 7;
-        int a[7][7];
+        int a[8][8];
 };
 
-int solveKnightTour(Board board, int row, int col, int currentMove = 1);
+int solveKnightTour(Board board, int row, int col, int currentMove = 1,
+                    ostream& output = cout);
+void printBoard(const Board& board, ostream& output);
 
 int main() {
     Board board;
-    int startPos[2];
-    cout << "KNIGHT'S TOUR SOLVER" << endl << endl;
+    ofstream outFile;
+    outFile.open("Knight's Tour.txt", ios::trunc);
+    /*int startPos[2];
+     cout << "KNIGHT'S TOUR SOLVER" << endl << endl;
 
-    cout << "Board Size (3-7): ";
-    cin >> board.size;
-    if (board.size > 7)
-        board.size = 7;
-    else if (board.size < 3)
-        board.size = 3;
+     cout << "Board Size (3-7): ";
+     cin >> board.size;
+     if (board.size > 7)
+     board.size = 7;
+     else if (board.size < 3)
+     board.size = 3;
 
-    cout << "Starting Position (x y): ";
-    cin >> startPos[0] >> startPos[1];
-    for (int i; i < startPos; i++)
-        if (startPos[i] > board.size)
-            startPos[i] = board.size;
+     cout << "Starting Position (x y): ";
+     cin >> startPos[0] >> startPos[1];
+     for (int i; i < 2; i++)
+     if (startPos[i] > board.size)
+     startPos[i] = board.size;
 
-    cout << endl << "Working";
+     cout << endl << "Working..." << endl << endl;*/
+
+    board.size = 5;
+    int solutions = solveKnightTour(board, 0, 0, 1, outFile);// startPos[0] - 1, startPos[1] - 1);
+    cout << "Working..." << endl << endl << endl;
+    outFile <<
+    cout << "SOLUTIONS: " << solutions;
+    outFile.close();
 }
 
 Board::Board() {
@@ -63,43 +75,43 @@ Board::Board() {
  | 4           1
  |    3     2
  */
-int solveKnightTour(Board board, int row, int col, int currentMove = 1) {
-    cout << ".";
-    board.a[row][col] = currentMove;
-    currentMove++;
-    if (currentMove == pow(board.size, 2))  //BASE CONDITION
-        return currentMove;
+int solveKnightTour(Board board, int row, int col, int currentMove, ostream& output) {
+    //create an array of 8 arrays of 2 ints
+    static const int MOVE[8][2] = {{2, -1}, {1, -2}, {-1, -2}, {-2, -1},
+                                   {-2, 1}, {-1, 2}, {1, 2}, {2, 1}};
+    static int solutions = 0;
 
-    //GENERAL CONDITIONS
-    else if (row + 2 <= board.size && col + 1 <= board.size
-             && board.a[row + 2][col + 1] == -1)  //1
-        return solveKnightTour(board, row + 2, col + 1, currentMove);
-    else if (row + 1 <= board.size && col + 2 <= board.size
-             && board.a[row + 1][col + 2] == -1)  //2
-        return solveKnightTour(board, row + 1, col + 2, currentMove);
-
-    else if (row - 1 >= 0 && col - 1 <= board.size
-             && board.a[row - 1][col + 2] == -1)  //3
-        return solveKnightTour(board, row - 1, col + 2, currentMove);
-    else if (row - 2 >= 0 && col - 1 <= board.size
-             && board.a[row - 2][col + 1] == -1)  //4
-        return solveKnightTour(board, row - 2, col + 1, currentMove);
-
-    else if (row - 2 >= 0 && col - 1 >= 0 && board.a[row - 2][col - 1] == -1)  //5
-        return solveKnightTour(board, row - 2, col - 1, currentMove);
-    else if (row - 1 >= 0 && col - 2 >= 0 && board.a[row - 1][col - 2] == -1)  //6
-        return solveKnightTour(board, row - 1, col - 2, currentMove);
-
-    else if (row + 1 <= board.size && col + 2 >= 0
-             && board.a[row + 1][col - 2] == -1)  //7
-        return solveKnightTour(board, row + 1, col + 2, currentMove);
-    else if (row + 2 <= board.size && col + 1 >= 0
-             && board.a[row + 2][col + 1] == -1)  //8
-        return solveKnightTour(board, row + 2, col + 1, currentMove);
-
-    else
+    if (currentMove == pow(board.size, 2) + 1)  //SOLUTION FOUND
     {
-        cout << "NO SOLUTION" << endl;
-        return -1;
+        solutions++;
+        //output every 1000 solutions found
+        if (solutions % 1000 == 0)
+            cout << "SOLUTIONS FOUND: " << solutions << endl << endl << endl;
+        output << "Solution #" << solutions << endl;
+        printBoard(board, output);
+        return solutions;
     }
+    else if (row >= board.size || row < 0 ||
+             col >= board.size || col < 0)  //BOUND CHECK
+        return 0;
+
+    if (board.a[row][col] == -1)  //SPACE OPEN?
+    {
+        board.a[row][col] = currentMove;
+        currentMove++;
+        for (int i = 0; i < 8; i++)
+            solveKnightTour(board, row + MOVE[i][0],
+                            col + MOVE[i][1], currentMove, output);
+    }
+    return solutions;
+}
+
+void printBoard(const Board& board, ostream& output) {
+    for (int y = 0; y < board.size; y++)
+    {
+        for (int x = 0; x < board.size; x++)
+            output << setw(2) << setfill('0') << board.a[x][y] << " ";
+        output << endl;
+    }
+    output << endl;
 }

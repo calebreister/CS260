@@ -1,54 +1,101 @@
 /**@file KnightTour.cc
- * @author Caleb Reister <calebreister@gmail.com>
- *
- * Finds a solution for the Knight's Tour on a given chess board via brute force.
- * Recursion practice.
+   @author Caleb Reister <calebreister@gmail.com>
+   @brief Finds a solution for the Knight's Tour on a given chess board via brute force.
  */
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
+#include <sstream>
+#include <iomanip>
 #include <cmath>
 using namespace std;
 
+/**@struct Board
+
+   This struct is a package for a simple 2d array (10x10). The size can be the actual index or
+   anything smaller. I am using it for a recusive function for enerating the Knight's Tour.
+ */
 struct Board {
         Board();
-        int size = 7;
-        int a[8][8];
+        unsigned short size = 10;
+        int a[10][10];
 };
 
-int solveKnightTour(Board board, int row, int col, int currentMove = 1,
-                    ostream& output = cout);
+int solveKnightTour(Board board, int row, int col, int currentMove, ostream& output);
 void printBoard(const Board& board, ostream& output);
 
 int main() {
     Board board;
     ofstream outFile;
-    outFile.open("Knight's Tour.txt", ios::trunc);
-    /*int startPos[2];
-     cout << "KNIGHT'S TOUR SOLVER" << endl << endl;
+    int startPos[2];
 
-     cout << "Board Size (3-7): ";
-     cin >> board.size;
-     if (board.size > 7)
-     board.size = 7;
-     else if (board.size < 3)
-     board.size = 3;
+    cout << "KNIGHT'S TOUR SOLVER" << endl
+         << "--------------------" << endl << endl;
 
-     cout << "Starting Position (x y): ";
-     cin >> startPos[0] >> startPos[1];
-     for (int i; i < 2; i++)
-     if (startPos[i] > board.size)
-     startPos[i] = board.size;
+    cout << "Board Size (3-10): ";
+    cin >> board.size;
+    if (board.size > 10)
+        board.size = 10;
+    else if (board.size < 3)
+        board.size = 3;
+    if (board.size >= 7)
+    {
+        char prompt;
+        cout << "The size you have chosen will take a very long time."
+             << "Are you sure you want to continue? [y/n] ";
+        cin >> prompt;
+        if (prompt != 'y')
+            return 0;
+    }
 
-     cout << endl << "Working..." << endl << endl;*/
+    cout << "Starting Position (x y): ";
+    cin >> startPos[0] >> startPos[1];
+    if (startPos[0] > board.size)
+        startPos[0] = board.size;
+    if (startPos[1] > board.size)
+        startPos[1] = board.size;
 
-    board.size = 5;
-    int solutions = solveKnightTour(board, 0, 0, 1, outFile);// startPos[0] - 1, startPos[1] - 1);
-    cout << "Working..." << endl << endl << endl;
-    outFile <<
-    cout << "SOLUTIONS: " << solutions;
-    outFile.close();
+    //check to see if user wants output to go to file
+    char fileIOPrompt;
+    cout << "Do you want the data generated to be written to a file? [y/n] ";
+    cin.ignore();
+    cin >> fileIOPrompt;
+    if (fileIOPrompt == 'y')
+    {
+        ostringstream* boardData;  //allows data to be stored in RAM and then output
+        //to a file at the end, it is a pointer in order to prevent a stack overflow
+        boardData = new ostringstream;
+        string fileName;
+        cout << "File Name (default KnightTour.txt): ";
+        cin.ignore();
+        getline(cin, fileName);
+        cout << endl;
+        if (fileName == "")
+            fileName = "KnightTour.txt";
+
+        cout << endl << "Working..." << endl << endl << endl;
+        //do the Knight's Tour
+        int solutions = solveKnightTour(board, startPos[0] - 1, startPos[1] - 1, 1, *boardData);
+        cout << "SOLUTIONS: " << solutions << endl;//output total solutions to console
+
+        //output to file
+        outFile.open(fileName.c_str(), ios::trunc);
+        outFile << "BOARD:" << board.size << "x" << board.size << endl;
+        outFile << "STARTING POSITION: (" << startPos[0] << ", " << startPos[1] << ")" << endl;
+        outFile << "SOLUTIONS: " << solutions << endl << endl << endl;
+        outFile << boardData->str();
+        delete boardData;
+        boardData = NULL;
+        outFile.close();
+    }
+    else
+    {
+        int solutions = solveKnightTour(board, startPos[0] - 1, startPos[1] - 1, 1, cout);
+        if (solutions == 0)
+            cout << "NO SOLUTION";
+    }
+
+    return 0;
 }
 
 Board::Board() {
@@ -57,7 +104,7 @@ Board::Board() {
             a[x][y] = -1;
 }
 
-/**@fn int solveKnightTour(Board board, int row, int col, int currentMoveNum = 1)
+/**@int solveKnightTour(Board board, int row, int col, int currentMove, ostream& output)
  @brief Recursively solves the knights tour using brute force. Prints any solutions it finds.
  @param board[io] The board we’re working with (board with previous moves and size)
  @param row[in] The row we’re going to attempt to place the knight on this move.
@@ -86,8 +133,8 @@ int solveKnightTour(Board board, int row, int col, int currentMove, ostream& out
         solutions++;
         //output every 1000 solutions found
         if (solutions % 1000 == 0)
-            cout << "SOLUTIONS FOUND: " << solutions << endl << endl << endl;
-        output << "Solution #" << solutions << endl;
+            cout << "SOLUTIONS FOUND: " << solutions << endl;
+        output << "Solution #" << solutions << endl;  //header of every solution
         printBoard(board, output);
         return solutions;
     }
@@ -106,6 +153,11 @@ int solveKnightTour(Board board, int row, int col, int currentMove, ostream& out
     return solutions;
 }
 
+/**@fn void printBoard(const Board& board, ostream& output)
+   @brief Prints a board to any output stream.
+   @param board The board to print
+   @param output The stream to use, can be cout, a file, a string stream, etc
+ */
 void printBoard(const Board& board, ostream& output) {
     for (int y = 0; y < board.size; y++)
     {

@@ -1,6 +1,6 @@
 /**@file KnightTour.cc
-   @author Caleb Reister <calebreister@gmail.com>
-   @brief Finds a solution for the Knight's Tour on a given chess board via brute force.
+ @author Caleb Reister <calebreister@gmail.com>
+ @brief Finds a solution for the Knight's Tour on a given chess board via brute force.
  */
 
 #include <iostream>
@@ -12,13 +12,13 @@ using namespace std;
 
 /**@struct Board
 
-   This struct is a package for a simple 2d array (10x10). The size can be the actual index or
-   anything smaller. I am using it for a recusive function for enerating the Knight's Tour.
+ This struct is a package for a simple 2d array (10x10). The size can be the actual index or
+ anything smaller. I am using it for a recusive function for enerating the Knight's Tour.
  */
 struct Board {
-        Board();
-        unsigned short size = 10;
-        int a[10][10];
+    Board();
+    unsigned short size = 10;
+    int a[10][10];
 };
 
 int solveKnightTour(Board board, int row, int col, int currentMove, ostream& output);
@@ -76,7 +76,7 @@ int main() {
         cout << endl << "Working..." << endl << endl << endl;
         //do the Knight's Tour
         int solutions = solveKnightTour(board, startPos[0] - 1, startPos[1] - 1, 1, *boardData);
-        cout << "SOLUTIONS: " << solutions << endl;//output total solutions to console
+        cout << "SOLUTIONS: " << solutions << endl;  //output total solutions to console
 
         //output to file
         outFile.open(fileName.c_str(), ios::trunc);
@@ -128,35 +128,34 @@ int solveKnightTour(Board board, int row, int col, int currentMove, ostream& out
                                    {-2, 1}, {-1, 2}, {1, 2}, {2, 1}};
     static int solutions = 0;
 
-    if (currentMove == pow(board.size, 2) + 1)  //SOLUTION FOUND
-    {
-        solutions++;
-        //output every 1000 solutions found
-        if (solutions % 1000 == 0)
-            cout << "SOLUTIONS FOUND: " << solutions << endl;
-        output << "Solution #" << solutions << endl;  //header of every solution
-        printBoard(board, output);
-        return solutions;
-    }
-    else if (row >= board.size || row < 0 ||
+    if (row >= board.size || row < 0 ||
              col >= board.size || col < 0)  //BOUND CHECK
         return 0;
-
-    if (board.a[row][col] == -1)  //SPACE OPEN?
+    else if (board.a[row][col] == -1)  //SPACE OPEN?
     {
         board.a[row][col] = currentMove;
         currentMove++;
         for (int i = 0; i < 8; i++)
-            solveKnightTour(board, row + MOVE[i][0],
-                            col + MOVE[i][1], currentMove, output);
+            solveKnightTour(board, row + MOVE[i][0], col + MOVE[i][1],
+                            currentMove, output);
     }
+    else if (currentMove == pow(board.size, 2) + 1)  //SOLUTION FOUND
+        {
+            solutions++;
+            //output every 1000 solutions found
+            if (solutions % 1000 == 0)
+                cout << "SOLUTIONS FOUND: " << solutions << endl;
+            output << "Solution #" << solutions << endl;  //header of every solution
+            printBoard(board, output);
+            return solutions;
+        }
     return solutions;
 }
 
 /**@fn void printBoard(const Board& board, ostream& output)
-   @brief Prints a board to any output stream.
-   @param board The board to print
-   @param output The stream to use, can be cout, a file, a string stream, etc
+ @brief Prints a board to any output stream.
+ @param board The board to print
+ @param output The stream to use, can be cout, a file, a string stream, etc
  */
 void printBoard(const Board& board, ostream& output) {
     for (int y = 0; y < board.size; y++)

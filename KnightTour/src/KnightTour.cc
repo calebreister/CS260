@@ -75,10 +75,14 @@ Board::Board() {
 
 /**@int solveKnightTour(Board board, int row, int col, int currentMove, ostream& output)
  @brief Recursively solves the knights tour using brute force. Prints any solutions it finds.
+ 
  @param board[io] The board we’re working with (board with previous moves and size)
+ @param output[out] The output stream to use (can by anything that inherits ostream)
  @param row[in] The row we’re going to attempt to place the knight on this move.
  @param col[in] The column we’re going to attempt place the knight on this move.
+ @param currentSolution[io] The solution counter, uses an external variable
  @param currentMove[in] The move we’re making (1 = first placement, 16 = last placement on 4x4 board)
+ 
  @return The number of solutions the given board and move leads to
 
  Note: row and col may be invalid (<0 or >=boardsize) or already taken (<currentMoveNum)

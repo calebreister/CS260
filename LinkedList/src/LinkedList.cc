@@ -3,6 +3,7 @@
  * @brief Implementation for simple LinkedList class
  */
 
+#include <exception>
 #include "LinkedList.hh"
 using namespace std;
 
@@ -158,6 +159,23 @@ void LinkedList::print(std::ostream& output) {
     output << n->data << endl << endl;
 }
 
-//printReverse was optional and I have a lot of homework at this time,
-//therefore, I have opted out of implementing it. I will try when I
-//have the extra time.
+/**@brief Print the list backwards
+ * @param output The output stream to use
+ * @param current Parameter used for recursion, implementation detail
+ *
+ * Node* current is used internally, do not change its default
+ * value. Failure to follow this advice will result in unpredictable
+ * behavior.
+ */
+void LinkedList::printReverse(ostream& output, Node* current) {
+    if (current == NULL)  //start chain reaction
+    {
+        printReverse(output, head);
+        return;
+    }
+
+    if (current->next != NULL)
+        printReverse(output, current->next);
+
+    cout << current->data << endl;
+}

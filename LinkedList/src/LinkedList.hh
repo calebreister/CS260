@@ -30,6 +30,8 @@ class LinkedList {
     void removeAll();
     unsigned int getCount();
     void print(std::ostream& output);
+    void printReverse(std::ostream& output = std::cout,
+                      Node* current = NULL);
 };
 
 #endif

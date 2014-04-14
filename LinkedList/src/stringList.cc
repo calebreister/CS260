@@ -6,7 +6,7 @@
 using namespace std;
 
 enum userAction {
-    LIST_ADD, LIST_REMOVE, LIST_ERASE, LIST_COUNT, QUIT
+    LIST_ADD, LIST_REMOVE, LIST_ERASE, LIST_COUNT, LIST_PRINT_REV, QUIT
 };
 userAction showMenu();
 
@@ -43,6 +43,11 @@ int main() {
         }
         else if (input == LIST_COUNT)
             cout << list.getCount() << endl;
+        else if (input == LIST_PRINT_REV)
+        {
+            list.printReverse();
+            cout << endl;
+        }
         else if (input == LIST_ERASE)
             list.removeAll();
         else if (input == QUIT)
@@ -57,6 +62,7 @@ userAction showMenu() {
          << "a - add to list" << endl
          << "r - remove from list" << endl
          << "c - count the items in the list" << endl
+         << "p - print the list in reverse" << endl
          << "x - erase list" << endl
          << "Q - quit" << endl
          << "-> ";
@@ -78,6 +84,10 @@ userAction showMenu() {
             break;
         case 'c':
             return LIST_COUNT;
+            break;
+        case 'p':
+            return LIST_PRINT_REV;
+            break;
         case 'Q':
             return QUIT;
             break;

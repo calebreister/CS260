@@ -13,7 +13,7 @@ LinkedList::LinkedList() {
 }
 
 LinkedList::~LinkedList() {
-    head = NULL;
+    //head = NULL;
     removeAll();
     delete head;
 }

@@ -29,7 +29,7 @@ int main() {
 
     do
     {
-        list.print(cout);
+        cout << list;
         input = showMenu();
 
         if (input == LIST_ADD)

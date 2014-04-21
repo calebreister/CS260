@@ -4,6 +4,41 @@
 #include <string>
 #include <iostream>
 
+/////////////////////////////////////////////////////////////////////////
+//PROTOTYPES
+template<class DataType>
+class DoublyLinkedList;
+
+template<class DataType>
+std::ostream& operator<<(std::ostream& stream,
+                         const DoublyLinkedList<DataType>& data);
+
+template<class DataType>
+bool operator==(const DoublyLinkedList<DataType>& a,
+                const DoublyLinkedList<DataType>& b);
+
+template<class DataType>
+bool operator!=(const DoublyLinkedList<DataType>& a,
+                const DoublyLinkedList<DataType>& b);
+
+template<class DataType>
+bool operator>(const DoublyLinkedList<DataType>& a,
+               const DoublyLinkedList<DataType>& b);
+
+template<class DataType>
+bool operator<(const DoublyLinkedList<DataType>& a,
+               const DoublyLinkedList<DataType>& b);
+
+template<class DataType>
+bool operator>=(const DoublyLinkedList<DataType>& a,
+                const DoublyLinkedList<DataType>& b);
+
+template<class DataType>
+bool operator<=(const DoublyLinkedList<DataType>& a,
+                const DoublyLinkedList<DataType>& b);
+
+//////////////////////////////////////////////////////////////
+//CLASS DECLARATIONS
 template<class DataType>
 struct Node {
     DataType data;
@@ -27,11 +62,27 @@ class DoublyLinkedList {
     bool remove(DataType data);
     void removeAll();
     unsigned int getCount();
-    void print(std::ostream& output);
     void printReverse(std::ostream& output);
+    //operator overloads
+    DoublyLinkedList<DataType>& operator=(const DoublyLinkedList<DataType>& data);
+    friend std::ostream& operator<< <>(std::ostream& stream,
+                                       const DoublyLinkedList& data);
+    friend bool operator== <>(const DoublyLinkedList& a,
+                              const DoublyLinkedList& b);
+    friend bool operator!= <>(const DoublyLinkedList& a,
+                              const DoublyLinkedList& b);
+    friend bool operator> <>(const DoublyLinkedList& a,
+                             const DoublyLinkedList& b);
+    friend bool operator< <>(const DoublyLinkedList& a,
+                             const DoublyLinkedList& b);
+    friend bool operator>= <>(const DoublyLinkedList& a,
+                              const DoublyLinkedList& b);
+    friend bool operator<= <>(const DoublyLinkedList& a,
+                              const DoublyLinkedList& b);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
+//MEMBERS
 template<class DataType>
 DoublyLinkedList<DataType>::DoublyLinkedList() {
     head = NULL;
@@ -54,7 +105,8 @@ void DoublyLinkedList<DataType>::removeNode(Node<DataType>* n) {
 }
 
 template<class DataType>
-bool DoublyLinkedList<DataType>::checkData(Node<DataType>* newNode, Node<DataType>* oldNode) {
+bool DoublyLinkedList<DataType>::checkData(Node<DataType>* newNode, Node<
+                                                   DataType>* oldNode) {
     if (newNode->data == oldNode->data)
     {
         delete newNode;
@@ -87,7 +139,7 @@ bool DoublyLinkedList<DataType>::insert(DataType data) {
         head = n;
         tail = n;
     }
-    else if (head->next == NULL && n->data <= head->data)  //1st item?
+    else if (n->data <= head->data)  //1st item?
     {
         if (checkData(n, head))
             return false;
@@ -217,36 +269,148 @@ unsigned int DoublyLinkedList<DataType>::getCount() {
     return count;
 }
 
-//NOT UPDATED, overload operator
-///@brief Prints the list to any output stream
-///@param output The output stream to use
 template<class DataType>
-void DoublyLinkedList<DataType>::print(std::ostream& output) {
+void DoublyLinkedList<DataType>::printReverse(std::ostream& output) {
     if (head != NULL)
     {
-        Node<DataType>* n = head;
-        while (n->next != NULL)
+        Node<DataType>* n = tail;
+        while (n->prev != NULL)
         {
             output << n->data << std::endl;
-            n = n->next;
+            n = n->prev;
         }
         output << n->data << std::endl << std::endl;
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+//OPERATORS
 template<class DataType>
-void DoublyLinkedList<DataType>::printReverse(std::ostream& output) {
-    if (head != NULL)
-        {
-            Node<DataType>* n = tail;
-            while (n->prev != NULL)
-            {
-                output << n->data << std::endl;
-                n = n->prev;
-            }
-            output << n->data << std::endl << std::endl;
-        }
+DoublyLinkedList<DataType>&
+DoublyLinkedList<DataType>::operator=(const DoublyLinkedList<DataType>& data) {
+    if (this == &data)
+        return *this;
+
+    this->removeAll();
+    Node<DataType>* current = data.head;
+    while (current != NULL) {
+        this->insert(current->data);
+        current = current->next;
+    }
+    return *this;
 }
 
+template<class DataType>
+std::ostream& operator<<(std::ostream& stream,
+                         const DoublyLinkedList<DataType>& data) {
+    if (data.head != NULL)
+    {
+        Node<DataType>* n = data.head;
+        while (n->next != NULL)
+        {
+            stream << n->data << std::endl;
+            n = n->next;
+        }
+        stream << n->data << std::endl << std::endl;
+    }
+
+    return stream;
+}
+
+template<class DataType>
+bool operator==(const DoublyLinkedList<DataType>& a,
+                const DoublyLinkedList<DataType>& b) {
+    if (a.count != b.count)
+        return false;
+
+    Node<DataType>* currentA = a.head;
+    Node<DataType>* currentB = b.head;
+    while (currentA != NULL && currentB != NULL)
+    {
+        if (currentA->data != currentB->data)
+            return false;
+        currentA = currentA->next;
+        currentB = currentB->next;
+    }
+    return true;
+}
+
+template<class DataType>
+bool operator!=(const DoublyLinkedList<DataType>& a,
+                const DoublyLinkedList<DataType>& b) {
+    return a == b ? false : true;
+}
+
+template<class DataType>
+bool operator>(const DoublyLinkedList<DataType>& a,
+               const DoublyLinkedList<DataType>& b) {
+    if (a.count != b.count)
+        return false;
+
+    Node<DataType>* currentA = a.head;
+    Node<DataType>* currentB = b.head;
+    while (currentA != NULL && currentB != NULL)
+    {
+        if (currentA->data <= currentB->data)
+            return false;
+        currentA = currentA->next;
+        currentB = currentB->next;
+    }
+    return true;
+}
+
+template<class DataType>
+bool operator<(const DoublyLinkedList<DataType>& a,
+               const DoublyLinkedList<DataType>& b) {
+    if (a.count != b.count)
+        return false;
+
+    Node<DataType>* currentA = a.head;
+    Node<DataType>* currentB = b.head;
+    while (currentA != NULL && currentB != NULL)
+    {
+        if (currentA->data >= currentB->data)
+            return false;
+        currentA = currentA->next;
+        currentB = currentB->next;
+    }
+    return true;
+}
+
+template<class DataType>
+bool operator>=(const DoublyLinkedList<DataType>& a,
+                const DoublyLinkedList<DataType>& b) {
+    if (a.count != b.count)
+        return false;
+
+    Node<DataType>* currentA = a.head;
+    Node<DataType>* currentB = b.head;
+    while (currentA != NULL && currentB != NULL)
+    {
+        if (currentA->data < currentB->data)
+            return false;
+        currentA = currentA->next;
+        currentB = currentB->next;
+    }
+    return true;
+}
+
+template<class DataType>
+bool operator<=(const DoublyLinkedList<DataType>& a,
+                const DoublyLinkedList<DataType>& b) {
+    if (a.count != b.count)
+        return false;
+
+    Node<DataType>* currentA = a.head;
+    Node<DataType>* currentB = b.head;
+    while (currentA != NULL && currentB != NULL)
+    {
+        if (currentA->data > currentB->data)
+            return false;
+        currentA = currentA->next;
+        currentB = currentB->next;
+    }
+    return true;
+}
 
 #endif

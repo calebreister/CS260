@@ -1,3 +1,5 @@
+#define NDEBUG
+#include <cassert>
 #include "DoublyLinkedList.hh"
 using namespace std;
 
@@ -25,7 +27,6 @@ bool DoublyLinkedList::checkData(Node* newNode, Node* oldNode) {
         delete newNode;
         return true;
     }
-
     return false;
 }
 
@@ -39,6 +40,10 @@ bool DoublyLinkedList::checkData(Node* newNode, Node* oldNode) {
  * - The list is automatically organized alphabetically
  */
 bool DoublyLinkedList::insert(std::string data) {
+    //no inserting a blank string
+    if (data == "")
+        return false;
+
     //Initialize
     Node* n = new Node;
     n->data = data;
@@ -60,19 +65,19 @@ bool DoublyLinkedList::insert(std::string data) {
     {
         if (checkData(n, tail))
             return false;
-        n->prev = tail;
         tail->next = n;
+        n->prev = tail;
         tail = n;
     }
     else  //insert in the middle
     {
-        Node* current = head->next;
+        Node* current = head;
         //find where to insert
         while (current->data < n->data)
             current = current->next;
 
         //check the data
-        if (checkData(n, current->next))
+        if (checkData(n, current))
             return false;
 
         //update pointers
@@ -81,6 +86,11 @@ bool DoublyLinkedList::insert(std::string data) {
         current->prev->next = n;
         current->prev = n;
     }
+
+    //make sure head does not have a previous and tail
+    //does not have a next pointer
+    tail->next = NULL;
+    head->prev = NULL;
 
     count++;
     return true;
@@ -101,24 +111,26 @@ bool DoublyLinkedList::remove(std::string data) {
     if (head == NULL)  //No data in the list
         return false;
 
-    if (data == head->data)  //remove 1st item
+    else if (data == head->data)  //remove 1st item
     {
         Node* temp = head;
         head = head->next;
         delete temp;
         count--;
+        if (count == 0)
+        {
+            delete head;
+            head = NULL;
+            tail = NULL;
+        }
         return true;
     }
-    /*else if (data == head->next->data) //2 items
-     {
-     Node* temp = head;
-     head = head->next;
-     }*/
     else if (data == tail->data)  //last item
     {
         Node* temp = tail;
         tail = tail->prev;
         delete temp;
+        tail->next = NULL;
         count--;
         return true;
     }
@@ -137,22 +149,27 @@ bool DoublyLinkedList::remove(std::string data) {
             return true;
         }
     }
+
     return false;
 }
 
-//NOT YET UPDATED
 ///@brief Erases the contents of the linked list
 void DoublyLinkedList::removeAll() {
-    Node* newHead;
-    while (head->next != NULL)
+    if (count > 0)
     {
-        newHead = head->next;
+        Node* newHead;
+        while (head->next != NULL)
+        {
+            newHead = head->next;
+            delete head;
+            head = newHead;
+        }
+        assert(head == tail);
+        count = 0;
         delete head;
-        head = newHead;
+        head = NULL;
+        tail = NULL;
     }
-    delete head;
-    head = NULL;
-    tail = NULL;
 }
 
 /**@brief Get the number of items in the list
@@ -167,11 +184,27 @@ unsigned int DoublyLinkedList::getCount() {
 ///@brief Prints the list to any output stream
 ///@param output The output stream to use
 void DoublyLinkedList::print(std::ostream& output) {
-    Node* n = head;
-    while (n->next != NULL)
+    if (head != NULL)
     {
-        output << n->data << endl;
-        n = n->next;
+        Node* n = head;
+        while (n->next != NULL)
+        {
+            output << n->data << endl;
+            n = n->next;
+        }
+        output << n->data << endl << endl;
     }
-    output << n->data << endl << endl;
+}
+
+void DoublyLinkedList::printReverse(std::ostream& output) {
+    if (head != NULL)
+        {
+            Node* n = tail;
+            while (n->prev != NULL)
+            {
+                output << n->data << endl;
+                n = n->prev;
+            }
+            output << n->data << endl << endl;
+        }
 }

@@ -11,7 +11,7 @@ enum userAction {
 userAction showMenu();
 
 int main() {
-    DoublyLinkedList list;
+    DoublyLinkedList<string> list;
     userAction input;
     list.insert("b");
     list.insert("a");

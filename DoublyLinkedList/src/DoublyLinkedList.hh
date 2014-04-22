@@ -1,3 +1,9 @@
+/**@file DoublyLinkedList.hh
+ * @author Caleb Reister <calebreister@gmail.com>
+ * @brief Declaration and implementation of the
+ * DoublyLinkedList class template
+ */
+
 #ifndef DOUBLY_LINKED_LIST_HH
 #define DOUBLY_LINKED_LIST_HH
 
@@ -39,6 +45,7 @@ bool operator<=(const DoublyLinkedList<DataType>& a,
 
 //////////////////////////////////////////////////////////////
 //CLASS DECLARATIONS
+///@brief A singe node for a DoublyLinkedList
 template<class DataType>
 struct Node {
     DataType data;
@@ -49,8 +56,8 @@ struct Node {
 template<class DataType>
 class DoublyLinkedList {
     private:
-    Node<DataType>* head;
-    Node<DataType>* tail;
+    Node<DataType>* head;  ///the beginning of the list
+    Node<DataType>* tail;  ///the end of the list
     unsigned int count;  ///the number of items in the list
     void removeNode(Node<DataType>* n);
     bool checkData(Node<DataType>* newNode, Node<DataType>* oldNode);
@@ -95,6 +102,9 @@ DoublyLinkedList<DataType>::~DoublyLinkedList() {
     removeAll();
 }
 
+/**@brief Remove a single node from the list and resolve the broken link
+ * @param n The node to remove
+ */
 template<class DataType>
 void DoublyLinkedList<DataType>::removeNode(Node<DataType>* n) {
     if (n != NULL)
@@ -104,9 +114,15 @@ void DoublyLinkedList<DataType>::removeNode(Node<DataType>* n) {
     }
 }
 
+/**@brief Checks Nodes for equality, and deletes the new one if they are the
+ * the same, useful when adding a new Node to the list.
+ * @param newNode The Node that is deleted conditionally
+ * @param oldNode The Node to check newNode against
+ * @return true if the nodes are equal
+ */
 template<class DataType>
-bool DoublyLinkedList<DataType>::checkData(Node<DataType>* newNode, Node<
-                                                   DataType>* oldNode) {
+bool DoublyLinkedList<DataType>::checkData(Node<DataType>* newNode,
+                                           Node<DataType>* oldNode) {
     if (newNode->data == oldNode->data)
     {
         delete newNode;
@@ -116,7 +132,8 @@ bool DoublyLinkedList<DataType>::checkData(Node<DataType>* newNode, Node<
 }
 
 /**@brief Insert data into the list
- * @param data The string of data to add
+ * @param data The data of data to add, can be any type with the
+ * appropriate operators.
  * @return Data inserted: true\n
  *         Duplicate data: false
  *
@@ -179,7 +196,7 @@ bool DoublyLinkedList<DataType>::insert(DataType data) {
 }
 
 /**@brief Removes the specified data from the linked list
- * @param data The string to remove
+ * @param data The data to remove, any type with the appropriate operators
  * @return True if data was removed, false otherwise.
  *
  * Notes:\n
@@ -236,7 +253,7 @@ bool DoublyLinkedList<DataType>::remove(DataType data) {
     return false;
 }
 
-///@brief Erases the contents of the linked list
+///@brief Erases the contents of the linked list and cleans up appropriately
 template<class DataType>
 void DoublyLinkedList<DataType>::removeAll() {
     if (count > 0)
@@ -265,22 +282,29 @@ unsigned int DoublyLinkedList<DataType>::getCount() {
     return count;
 }
 
+///@brief Prints the list in reverse to the specified output stream
 template<class DataType>
-void DoublyLinkedList<DataType>::printReverse(std::ostream& output) {
+void DoublyLinkedList<DataType>::printReverse(std::ostream& stream) {
     if (head != NULL)
     {
         Node<DataType>* n = tail;
         while (n->prev != NULL)
         {
-            output << n->data << std::endl;
+            stream << n->data << std::endl;
             n = n->prev;
         }
-        output << n->data << std::endl << std::endl;
+        stream << n->data << std::endl << std::endl;
     }
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 //OPERATORS
+///@brief Performs a deep copy of the list
+///
+///NOTE: this process may be taxing depending on the size of the list, as
+///all of the contents are copied.\n\n
+///This function has been fully tested, and the addresses are all different according
+///to the debugger.
 template<class DataType>
 DoublyLinkedList<DataType>&
 DoublyLinkedList<DataType>::operator=(const DoublyLinkedList<DataType>& data) {
@@ -296,6 +320,7 @@ DoublyLinkedList<DataType>::operator=(const DoublyLinkedList<DataType>& data) {
     return *this;
 }
 
+///@brief prints the list from head to tail, each node on a new line
 template<class DataType>
 std::ostream& operator<<(std::ostream& stream,
                          const DoublyLinkedList<DataType>& data) {
@@ -313,6 +338,7 @@ std::ostream& operator<<(std::ostream& stream,
     return stream;
 }
 
+///@brief checks the two lists for equality, checks counts first
 template<class DataType>
 bool operator==(const DoublyLinkedList<DataType>& a,
                 const DoublyLinkedList<DataType>& b) {
@@ -337,6 +363,7 @@ bool operator!=(const DoublyLinkedList<DataType>& a,
     return a == b ? false : true;
 }
 
+///@return true if a > b, false if not or if the counts are different
 template<class DataType>
 bool operator>(const DoublyLinkedList<DataType>& a,
                const DoublyLinkedList<DataType>& b) {
@@ -355,6 +382,7 @@ bool operator>(const DoublyLinkedList<DataType>& a,
     return true;
 }
 
+///@return true if a < b, false if not or if the counts are different
 template<class DataType>
 bool operator<(const DoublyLinkedList<DataType>& a,
                const DoublyLinkedList<DataType>& b) {
@@ -373,6 +401,7 @@ bool operator<(const DoublyLinkedList<DataType>& a,
     return true;
 }
 
+///@return true if a >= b, false if not or if the counts are different
 template<class DataType>
 bool operator>=(const DoublyLinkedList<DataType>& a,
                 const DoublyLinkedList<DataType>& b) {
@@ -391,6 +420,7 @@ bool operator>=(const DoublyLinkedList<DataType>& a,
     return true;
 }
 
+///@return true if a <= b, false if not or if the counts are different
 template<class DataType>
 bool operator<=(const DoublyLinkedList<DataType>& a,
                 const DoublyLinkedList<DataType>& b) {

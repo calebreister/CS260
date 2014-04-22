@@ -1,3 +1,8 @@
+/**@file Dog.hh
+ * @author Caleb Reister <calebreister@gmail.com>
+ * @brief Declares a dummy test class and a couple of (mildly amusing)
+ *  enumerations.
+ */
 #ifndef ARRAY_HH
 #define ARRAY_HH
 #include <iostream>
@@ -12,6 +17,8 @@ enum Sound {
     BARK, MOO, YELP, HOWL, YAP
 };
 
+///@brief A simple class used solely for testing purposes. It has
+/// no practical value.
 struct Dog {
     std::string name = "Cache";
     bool alive = true;

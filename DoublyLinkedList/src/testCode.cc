@@ -35,6 +35,10 @@ int main() {
     runComparisons(dog1, dog2);
 }
 
+/**@brief Runs a set of tests on the DoublyLinkedList operators
+ * @param a The 1st linked list to compare
+ * @param b The 2nd linked list to compare
+ */
 void runComparisons(DoublyLinkedList<int>& a,
                     DoublyLinkedList<int>& b) {
     a.insert(2);
@@ -81,6 +85,7 @@ void runComparisons(DoublyLinkedList<int>& a,
     cout << "--------------------------------------------------" << endl;
 }
 
+///@brief Runs all of the supported operator overloads on two Dog classes
 void runComparisons(const Dog& a, const Dog& b) {
     cout << "dog1\n" << a
          << "dog2\n" << b

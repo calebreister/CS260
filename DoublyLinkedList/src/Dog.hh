@@ -26,6 +26,7 @@ struct Dog {
     friend bool operator<(const Dog& a, const Dog& b);
     friend bool operator>=(const Dog& a, const Dog& b);
     friend bool operator<=(const Dog& a, const Dog& b);
+    friend std::ostream& operator<<(std::ostream& stream, const Dog& data);
 };
 
 #endif

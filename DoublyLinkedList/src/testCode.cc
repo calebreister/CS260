@@ -6,63 +6,88 @@
 #include "Dog.hh"
 using namespace std;
 
-void runComparisons(const DoublyLinkedList<int>& a,
-                    const DoublyLinkedList<int>& b);
+void runComparisons(DoublyLinkedList<int>& a,
+                    DoublyLinkedList<int>& b);
 void runComparisons(const Dog& a, const Dog& b);
 
 int main() {
+    DoublyLinkedList<int> l1, l2;
+    cout << "a = l1; b = l2" << endl;
+    runComparisons(l1, l2);
 
+    DoublyLinkedList<Dog> dogs;
+    Dog dog1;
+    Dog dog2;
+    runComparisons(dog1, dog2);
+
+    dog1.name = "Fido";
+    dog1.noodle = IDIOT;
+    dog1.weightLbs = 10;
+    dog2.name = "Barbarian the Barbarian";
+    dog2.noodle = MR_PEABODY;
+    dog2.weightLbs = 2500;
+    dogs.insert(dog1);
+    dogs.insert(dog2);
+    cout << dogs;
+    dogs.remove(dog2);
+    dogs.remove(dog1);
+    cout << dogs;
+    runComparisons(dog1, dog2);
 }
 
-void runComparisons(const DoublyLinkedList<int>& a,
-                    const DoublyLinkedList<int>& b) {
-    //int tests
-    DoublyLinkedList<int> l1;
-    DoublyLinkedList<int> l2;
+void runComparisons(DoublyLinkedList<int>& a,
+                    DoublyLinkedList<int>& b) {
+    a.insert(2);
+    a.insert(1);
+    a.insert(2);
+    a.insert(5);
+    a.insert(30);
+    a.insert(3);
+    cout << "a\n" << a << endl;
 
-    l1.insert(2);
-    l1.insert(1);
-    l1.insert(2);
-    l1.insert(5);
-    l1.insert(30);
-    l1.insert(3);
-    cout << "l1\n" << l1 << endl;
-
-    l2 = l1;
+    b = a;
     cout << "Equality tests\n"
-         << "l1 == l2? " << (l1 == l2) << endl
-         << "l1 != l2? " << (l1 != l2) << endl;
+         << "a == b? " << (a == b) << endl
+         << "a != b? " << (a != b) << endl;
 
-    l1.remove(30);
-    l1.remove(2);
-    l1.remove(1);
+    a.remove(30);
+    a.remove(2);
+    a.remove(1);
     cout << "!= test" << endl
-         << "l1 != l2? " << (l1 != l2) << endl
-         << "l1 != l2? " << (l1 != l2) << endl;
+         << "a != b? " << (a != b) << endl
+         << "a != b? " << (a != b) << endl;
 
-    l1.removeAll();
-    l2.removeAll();
-    l1.insert(2);
-    l1.insert(1);
-    l1.insert(3);
-    l2.insert(4);
-    l2.insert(5);
-    l2.insert(6);
-    cout << "l1\n" << l1 << endl
-         << "l2\n" << l2 << endl;
-    cout << "l1 = {1,2,3}; l2 = {4,5,6}" << endl
-         << "l1 > l2? " << (l1 > l2) << endl
-         << "l1 < l2? " << (l1 < l2) << endl
-         << "l1 >= l2? " << (l1 >= l2) << endl
-         << "l1 <= l2? " << (l1 <= l2) << endl;
-    l1 = l2;
-    cout << "l1 = l2" << endl
-         << "l1 > l2? " << (l1 > l2) << endl
-         << "l1 < l2? " << (l1 < l2) << endl
-         << "l1 >= l2? " << (l1 >= l2) << endl
-         << "l1 <= l2? " << (l1 <= l2) << endl;
+    a.removeAll();
+    b.removeAll();
+    a.insert(2);
+    a.insert(1);
+    a.insert(3);
+    b.insert(4);
+    b.insert(5);
+    b.insert(6);
+    cout << "a\n" << a << endl
+         << "b\n" << b << endl;
+    cout << "a = {1,2,3}; b = {4,5,6}" << endl
+         << "a > b? " << (a > b) << endl
+         << "a < b? " << (a < b) << endl
+         << "a >= b? " << (a >= b) << endl
+         << "a <= b? " << (a <= b) << endl;
+    a = b;
+    cout << "a = b" << endl
+         << "a > b? " << (a > b) << endl
+         << "a < b? " << (a < b) << endl
+         << "a >= b? " << (a >= b) << endl
+         << "a <= b? " << (a <= b) << endl;
+    cout << "--------------------------------------------------" << endl;
 }
 
 void runComparisons(const Dog& a, const Dog& b) {
-
+    cout << "dog1\n" << a
+         << "dog2\n" << b
+         << "dog1 == dog2? " << (a == b) << endl
+         << "dog1 != dog2? " << (a != b) << endl
+         << "dog1 > dog2? " << (a > b) << endl
+         << "dog1 < dog2? " << (a < b) << endl
+         << "dog1 >= dog2? " << (a >= b) << endl
+         << "dog1 <= dog2? " << (a <= b) << endl;
 }

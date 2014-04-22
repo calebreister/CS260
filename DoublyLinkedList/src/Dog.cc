@@ -48,8 +48,15 @@ bool operator>=(const Dog& a, const Dog& b) {
 }
 
 bool operator<=(const Dog& a, const Dog& b) {
-    if (a > b || a == b)
+    if (a < b || a == b)
         return true;
     else
         return false;
+}
+
+ostream& operator<<(ostream& stream, const Dog& data) {
+    stream << "Name:" << data.name << " Alive:" << data.alive
+           << " Intel:" << data.noodle << " Weight:" << data.weightLbs
+           << " Sound:" << data.snd << endl;
+    return stream;
 }

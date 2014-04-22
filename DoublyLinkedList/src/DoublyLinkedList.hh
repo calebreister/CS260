@@ -126,10 +126,6 @@ bool DoublyLinkedList<DataType>::checkData(Node<DataType>* newNode, Node<
  */
 template<class DataType>
 bool DoublyLinkedList<DataType>::insert(DataType data) {
-    //no inserting a blank string
-    if (data == "")
-        return false;
-
     //Initialize
     Node<DataType>* n = new Node<DataType>;
     n->data = data;

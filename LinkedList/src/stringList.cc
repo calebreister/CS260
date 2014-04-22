@@ -50,9 +50,7 @@ int main() {
         }
         else if (input == LIST_ERASE)
             list.removeAll();
-        else if (input == QUIT)
-            return 0;
-    } while (true);
+    } while (input != QUIT);
 }
 
 ///@brief Choose an action to perform on a linked list, strictly user interface.

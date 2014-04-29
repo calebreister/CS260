@@ -3,26 +3,22 @@
  */
 
 #include <cassert>
-#include <stack>
-#include <string>
-#include <iostream>
-#include <algorithm>
-#include <cctype>
-#include <exception>
-#include <stdexcept>
-#include <utility>
+#include "RPN-Calc.hh"
 using namespace std;
 
 const string NUMBERS = "1234567890.";
 const string OPERATORS = "+-*/";
 const string LEGAL = NUMBERS + OPERATORS + "()Q";
+const char DELIM = '';  //Delimiter for postfix string
 
-string userInput();
-void validateInfix(string& infix) throw (std::invalid_argument);
-string postfixify(string infixEqn);
-long double evaluatePostfix(string postfixEqn);
-int getPrecedence(char op);
-
+// Curly brace formatting rule:
+//Anything that is commonly nested needs a curly brace on its own line.
+//This includes for and while loops, and if/else if/else statements
+//Switches will easily get confusing if they are nested, so the top brace
+//can be on the same line as the switch.
+//Other statements that can have the brace on 1 line are:
+//functions, classes/structs, initializer lists, lambda functions,
+//try/catch statements, and enums
 ////////////////////////////////////////////////////////////////////////////////////
 int main() {
     cout << "LEGAL CHARACTERS: \"1234567890+-*/()Q.,\"\n"
@@ -36,16 +32,23 @@ int main() {
         {
             //not necessarily the best application for exceptions, but
             //I figured it would be a good time to learn.
-            try
-            {
+            try {
                 validateInfix(eqn);
             }
-            catch (std::invalid_argument&)
-            {
+            catch (open_paren&) {
+                cout << "\"" << eqn << "\" is invalid. Please make "
+                     << "sure you have matching parenthesis.\n";
+            }
+            catch (op_at_end&) {
+                cout << "\"" << eqn << "\" is invalid. No operators"
+                     << " at the end of an expression.\n";
+            }
+            catch (illegal_char&) {
                 cout << "\"" << eqn << "\" is invalid. Please make "
                      << "sure you only use legal characters.\n";
             }
-            cout << postfixify(eqn) << endl;
+            cout << "\nInfix: " << eqn << endl;
+            cout << "Postfix: " << postfixify(eqn) << endl;
         }
     } while (eqn != "Q");
 }
@@ -69,11 +72,11 @@ string userInput() {
  * const string OPERATORS = "+-*()/";
  * const string LEGAL = NUMBERS + OPERATORS + "Q";
  */
-void validateInfix(string& infix) throw (std::invalid_argument) {
+void validateInfix(string& infix) throw (illegal_char, open_paren, op_at_end) {
     infix.erase(remove_if(infix.begin(), infix.end(),  //beginning and end iterators for std::remove
                 [](char x) {return std::isspace(x);}),  //find all whitespace, lambda expression
                 infix.end());  //end iterator for infix.erase()
-    /* Lambda expression syntax
+    /* Lambda expression syntax (cppreference.com)
      * [ capture ] ( params ) { body }
      *
      * Capture pulls in variables from the current scope
@@ -83,12 +86,22 @@ void validateInfix(string& infix) throw (std::invalid_argument) {
      [=] captures all automatic variables mentioned in the body of the lambda by value
      [] captures nothing
      */
-    cout << infix << endl;
+
+    if (countChar(infix, '(') != countChar(infix, ')'))
+            throw open_paren();
+
+    switch (infix[infix.length() - 1]) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        throw op_at_end();
+        break;
+    }
+
     for (unsigned int i = 0; i < infix.length(); i++)
         if (LEGAL.find(infix[i]) == string::npos)  //search for invalid characters
-            throw std::invalid_argument(infix);
-
-    cout << "\nInfix: " << infix << endl;
+            throw illegal_char();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +109,7 @@ void validateInfix(string& infix) throw (std::invalid_argument) {
  * @param infixEqn the infix equation to convert
  * @return the postfix expression
  */
-string postfixify(string infixEqn) {
+string postfixify(const string& infixEqn) {
     string postfix = "";
     std::stack<char> operations;
 
@@ -112,8 +125,8 @@ string postfixify(string infixEqn) {
                 postfix += infixEqn[i];  //append the number
                 //i++;  //advance i
             //}
-            //postfix += ",";  //comma-delimits numbers
             //i--;
+            postfix += DELIM;
         }
 
         else if (infixEqn[i] == '(')
@@ -121,10 +134,11 @@ string postfixify(string infixEqn) {
 
         else if (OPERATORS.find(infixEqn[i]) != string::npos)
         {
-                while (!operations.empty() &&
-                       getPrecedence(operations.top()) >= getPrecedence(infixEqn[i]))
+            //if (!operations.empty())
+                while (!operations.empty() && getPrecedence(operations.top()) >= getPrecedence(infixEqn[i]))
                 {
                         postfix += operations.top();
+                        postfix += DELIM;
                         operations.pop();
                 }
             operations.push(infixEqn[i]);
@@ -135,32 +149,54 @@ string postfixify(string infixEqn) {
             while (!operations.empty() && operations.top() != '(')
             {
                 postfix += operations.top();
+                postfix += DELIM;
                 operations.pop();
             }
-        }
-
-        if (!operations.empty() && operations.top() == '(')
             operations.pop();
+        }
     }
 
     while (!operations.empty())
     {
         postfix += operations.top();
+        postfix += DELIM;
         operations.pop();
     }
 
+    postfix[postfix.length() - 1] = '\0';
     return postfix;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-long double evaluatePostfix(string postfixEqn) {
+/**@brief Evaluates a postfix expression, assumes that const char DELIM is defined.
+ * @param postfixEqn A string containing a valid postfix (RPN) expression delimited with DELIM
+ * @return The result of the calculation
+ *
+ * Conversion algorithm from Wikipedia (some parts used)
+   1. Read one character input at a time and keep pushing it into the character stack until the new
+      line character is reached
+   2. Perform pop from the character stack. If the stack is empty, go to step (3)
+      Number                        (2.1) Push in to the integer stack and then go to step (1)
+      Operator                      (2.2)  Assign the operator to op
+                                           Pop a number from  integer stack and assign it to op1
+                                           Pop another number from integer stack
+                                           and assign it to op2
+                                           Calculate op1 op op2 and push the output into the integer
+                                           stack. Go to step (2)
+   3. Pop the result from the integer stack and display the result
 
+ */
+long double evaluatePostfix(string postfixEqn) {
+    stack<char> eqn;
+    for (string::size_type i = 0; i < postfixEqn.length(); i++)
+    {
+
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 int getPrecedence(char op) {
-    switch (op)
-    {
+    switch (op) {
         case '+':
         case '-':
         return 1;
@@ -172,7 +208,16 @@ int getPrecedence(char op) {
         break;
 
         case '(':
-        return 3;
+        return 0;
         break;
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+int countChar(const string& input, char ch) {
+    int result = 0;
+    for (string::size_type i = 0; i < input.length(); i++)
+        if (input[i] == ch)
+            result++;
+    return result;
 }

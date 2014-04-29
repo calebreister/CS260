@@ -9,7 +9,7 @@ using namespace std;
 const string NUMBERS = "1234567890.";
 const string OPERATORS = "+-*/";
 const string LEGAL = NUMBERS + OPERATORS + "()Q";
-const char DELIM = '';  //Delimiter for postfix string
+//const char DELIM = '';  //Delimiter for postfix string
 
 // Curly brace formatting rule:
 //Anything that is commonly nested needs a curly brace on its own line.
@@ -27,7 +27,8 @@ int main() {
     string eqn;
     do
     {
-        eqn = userInput();
+        eqn = userInput();  //infix equation
+        string pfixEqn;  //postfix equation
         if (eqn != "Q")
         {
             //not necessarily the best application for exceptions, but
@@ -48,7 +49,9 @@ int main() {
                      << "sure you only use legal characters.\n";
             }
             cout << "\nInfix: " << eqn << endl;
-            cout << "Postfix: " << postfixify(eqn) << endl;
+            pfixEqn = postfixify(eqn);
+            cout << "Postfix: " << pfixEqn << endl;
+            cout << "Result: " << evaluatePostfix(pfixEqn) << endl;
         }
     } while (eqn != "Q");
 }
@@ -99,7 +102,7 @@ void validateInfix(string& infix) throw (illegal_char, open_paren, op_at_end) {
         break;
     }
 
-    for (unsigned int i = 0; i < infix.length(); i++)
+    for (string::size_type i = 0; i < infix.length(); i++)
         if (LEGAL.find(infix[i]) == string::npos)  //search for invalid characters
             throw illegal_char();
 }
@@ -108,13 +111,32 @@ void validateInfix(string& infix) throw (illegal_char, open_paren, op_at_end) {
 /**@brief Converts postfix to infix, expects a valid expression
  * @param infixEqn the infix equation to convert
  * @return the postfix expression
+ *
+   Based roughly on this algorithm....
+
+   For each item in the infix expression
+        If it is a number
+            append it to postfix string.
+        else If it is a left parenthesis
+            push it onto the stack
+        else If it is an operator (+,-,*,/)
+            If the stack is not empty
+                while the operator on the top of the stack is >= precedence
+                    pop the operator and append it to postfix expression
+            push operator onto the stack
+        else If it is right parenthesis then
+            while the stack is not empty and top not equal to left parenthesis
+                Pop from stack and append to postfix expression
+            pop out the left parenthesis and discard it
+        While stack is not empty
+            pop and append to the postfix string.
  */
 string postfixify(const string& infixEqn) {
     string postfix = "";
     std::stack<char> operations;
 
     //iterate thru the input
-    for (unsigned int i = 0; i < infixEqn.length(); i++)
+    for (string::size_type i = 0; i < infixEqn.length(); i++)
     {
         if (NUMBERS.find(infixEqn[i]) != string::npos)  //if it is a number
         {
@@ -126,7 +148,7 @@ string postfixify(const string& infixEqn) {
                 //i++;  //advance i
             //}
             //i--;
-            postfix += DELIM;
+            //postfix += DELIM;
         }
 
         else if (infixEqn[i] == '(')
@@ -138,7 +160,7 @@ string postfixify(const string& infixEqn) {
                 while (!operations.empty() && getPrecedence(operations.top()) >= getPrecedence(infixEqn[i]))
                 {
                         postfix += operations.top();
-                        postfix += DELIM;
+                        //postfix += DELIM;
                         operations.pop();
                 }
             operations.push(infixEqn[i]);
@@ -149,7 +171,7 @@ string postfixify(const string& infixEqn) {
             while (!operations.empty() && operations.top() != '(')
             {
                 postfix += operations.top();
-                postfix += DELIM;
+                //postfix += DELIM;
                 operations.pop();
             }
             operations.pop();
@@ -159,11 +181,11 @@ string postfixify(const string& infixEqn) {
     while (!operations.empty())
     {
         postfix += operations.top();
-        postfix += DELIM;
+        //postfix += DELIM;
         operations.pop();
     }
 
-    postfix[postfix.length() - 1] = '\0';
+    postfix += '\0';
     return postfix;
 }
 
@@ -172,26 +194,62 @@ string postfixify(const string& infixEqn) {
  * @param postfixEqn A string containing a valid postfix (RPN) expression delimited with DELIM
  * @return The result of the calculation
  *
- * Conversion algorithm from Wikipedia (some parts used)
+   Conversion algorithm from Wikipedia, converted to be fully iterative and suit my format.
+
    1. Read one character input at a time and keep pushing it into the character stack until the new
       line character is reached
    2. Perform pop from the character stack. If the stack is empty, go to step (3)
-      Number                        (2.1) Push in to the integer stack and then go to step (1)
-      Operator                      (2.2)  Assign the operator to op
-                                           Pop a number from  integer stack and assign it to op1
-                                           Pop another number from integer stack
-                                           and assign it to op2
-                                           Calculate op1 op op2 and push the output into the integer
-                                           stack. Go to step (2)
+      Number: Push in to the integer stack and then go to step (1)
+      Operator: Assign the operator to pop
+      1. Pop a number from  integer stack and assign it to op1
+      2. Pop another number from integer stack and assign it to op2
+      3. Calculate op1 op op2 and push the output into the integer stack. Go to step (2)
    3. Pop the result from the integer stack and display the result
-
  */
 long double evaluatePostfix(string postfixEqn) {
-    stack<char> eqn;
-    for (string::size_type i = 0; i < postfixEqn.length(); i++)
-    {
+    stack<char> chStack;  //character stack
+    stack<long double> numStack;  //number stack
 
+    for (string::size_type i = 0; postfixEqn[i] != '\0'; i++)
+    {
+        chStack.push(postfixEqn[i]);
+
+        if (NUMBERS.find(chStack.top()) != string::npos)
+        {
+            char* num = new char[2];
+            num[0] = chStack.top();
+            num[1] = '\0';
+            chStack.pop();
+            numStack.push(strtold(num, &num));
+        }
+        else if (OPERATORS.find(postfixEqn[i]) != string::npos)
+        {
+            long double op[2];  //operands
+            op[1] = numStack.top();
+            numStack.pop();
+            op[0] = numStack.top();
+            numStack.pop();
+
+            switch (postfixEqn[i]) {
+                case '+':
+                numStack.push(op[0] + op[1]);
+                break;
+
+                case '-':
+                numStack.push(op[0] - op[1]);
+                break;
+
+                case '*':
+                numStack.push(op[0] * op[1]);
+                break;
+
+                case '/':
+                numStack.push(op[0] / op[1]);
+            }
+        }
     }
+
+    return numStack.top();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -206,11 +264,10 @@ int getPrecedence(char op) {
         case '/':
         return 2;
         break;
-
-        case '(':
-        return 0;
-        break;
     }
+
+    //deals with parenthesis
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

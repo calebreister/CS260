@@ -13,6 +13,8 @@
 #include <exception>
 #include <stdexcept>
 #include <utility>
+#include <cstdlib>
+#include <cstring>
 
 struct illegal_char : public std::exception
 {

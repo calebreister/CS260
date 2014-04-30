@@ -7,9 +7,10 @@
 using namespace std;
 
 int main() {
-    cout << "LEGAL CHARACTERS: \"1234567890+-*/()Q.,\"\n"
+    cout << "LEGAL CHARACTERS: " << LEGAL
          << "Entering \"Q\" quits the program.\n"
-         << "Please enter an equation to be evaluated...\n";
+         << "Please enter an equation to be evaluated...\n"
+         << "NOTE: in order to insert negative numbers, use 0-x.\n";
     string eqn;
     do
     {
@@ -21,23 +22,23 @@ int main() {
             //I figured it would be a good time to learn.
             try {
                 validateInfix(eqn);
+                cout << "\nInfix: " << eqn << endl;
+                pfixEqn = postfixify(eqn);
+                cout << "Postfix: " << pfixEqn << endl;
+                cout << "Result: " << evaluatePostfix(pfixEqn) << endl;
             }
             catch (open_paren&) {
                 cout << "\"" << eqn << "\" is invalid. Please make "
                      << "sure you have matching parenthesis.\n";
             }
-            catch (op_at_end&) {
+            catch (invalid_op&) {
                 cout << "\"" << eqn << "\" is invalid. No operators"
-                     << " at the end of an expression.\n";
+                     << " at the beginning or end of an expression.\n";
             }
             catch (illegal_char&) {
                 cout << "\"" << eqn << "\" is invalid. Please make "
                      << "sure you only use legal characters.\n";
             }
-            cout << "\nInfix: " << eqn << endl;
-            pfixEqn = postfixify(eqn);
-            cout << "Postfix: " << pfixEqn << endl;
-            cout << "Result: " << evaluatePostfix(pfixEqn) << endl;
         }
     } while (eqn != "Q");
 }
@@ -58,9 +59,12 @@ string userInput() {
  *
  * NOTE: this function relies on the constants defined in the header
  */
-void validateInfix(string& infix) throw (illegal_char, open_paren, op_at_end) {
+void validateInfix(string& infix) throw (illegal_char, open_paren, invalid_op) {
+
     infix.erase(remove_if(infix.begin(), infix.end(),  //beginning and end iterators for std::remove
-                [](char x) {return std::isspace(x);}),  //find all whitespace, lambda expression
+                [](char x) {
+                    return std::isspace(x);  //find all whitespace, lambda expression
+                }),
                 infix.end());  //end iterator for infix.erase()
     /* Lambda expression syntax (cppreference.com)
      * [ capture ] ( params ) { body }
@@ -76,14 +80,10 @@ void validateInfix(string& infix) throw (illegal_char, open_paren, op_at_end) {
     if (countChar(infix, '(') != countChar(infix, ')'))
             throw open_paren();
 
-    switch (infix[infix.length() - 1]) {
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-        throw op_at_end();
-        break;
-    }
+    if (OPERATORS.find(infix[infix.length() - 1]) != string::npos)
+        throw invalid_op();
+    if (OPERATORS.find(infix[0]) != string::npos)
+        throw invalid_op();
 
     for (string::size_type i = 0; i < infix.length(); i++)
         if (LEGAL.find(infix[i]) == string::npos)  //search for invalid characters
@@ -122,39 +122,28 @@ string postfixify(const string& infixEqn) {
     for (string::size_type i = 0; i < infixEqn.length(); i++)
     {
         if (NUMBERS.find(infixEqn[i]) != string::npos)  //if it is a number
-        {
-            //keep going until an operator is found
-            //while the character at i is a number
-            //while (NUMBERS.find(infixEqn[i]) != string::npos)
-            //{
-                postfix += infixEqn[i];  //append the number
-                //i++;  //advance i
-            //}
-            //i--;
-            //postfix += DELIM;
-        }
+            postfix += infixEqn[i];  //append the number
 
         else if (infixEqn[i] == '(')
             operations.push(infixEqn[i]);
 
         else if (OPERATORS.find(infixEqn[i]) != string::npos)
         {
-            //if (!operations.empty())
-                while (!operations.empty() && getPrecedence(operations.top()) >= getPrecedence(infixEqn[i]))
-                {
-                        postfix += operations.top();
-                        //postfix += DELIM;
-                        operations.pop();
-                }
+            postfix += DELIM;
+            while (!operations.empty() && getPrecedence(operations.top()) >= getPrecedence(infixEqn[i]))
+            {
+                    postfix += operations.top();
+                    operations.pop();
+            }
             operations.push(infixEqn[i]);
+            //postfix += DELIM;
         }
 
         else if (infixEqn[i] == ')')
         {
             while (!operations.empty() && operations.top() != '(')
             {
-                postfix += operations.top();
-                //postfix += DELIM;
+                postfix = postfix + DELIM + operations.top();
                 operations.pop();
             }
             operations.pop();
@@ -163,12 +152,11 @@ string postfixify(const string& infixEqn) {
 
     while (!operations.empty())
     {
-        postfix += operations.top();
-        //postfix += DELIM;
+        postfix = postfix + DELIM + operations.top();
         operations.pop();
     }
 
-    postfix += '\0';
+    postfix = postfix + DELIM + '\0';
     return postfix;
 }
 
@@ -189,31 +177,29 @@ string postfixify(const string& infixEqn) {
       3. Calculate op1 op op2 and push the output into the integer stack. Go to step (2)
    3. Pop the result from the integer stack and display the result
  */
-float evaluatePostfix(string postfixEqn) {
+long double evaluatePostfix(string postfixEqn) {
     stack<char> chStack;  //character stack
-    stack<int> numStack;  //number stack
+    stack<long double> numStack;  //number stack
 
-    for (string::size_type i = 0; postfixEqn[i] != '\0'; i++)
+    istringstream eqnInput(postfixEqn);
+
+    while (eqnInput.peek() != '\0')
     {
-        chStack.push(postfixEqn[i]);
-
-        if (NUMBERS.find(chStack.top()) != string::npos)
+        if (NUMBERS.find(static_cast<char>(eqnInput.peek())) != string::npos)
         {
-            char* num = new char[2];
-            num[0] = chStack.top();
-            num[1] = '\0';
-            chStack.pop();
-            numStack.push(strtold(num, &num));
+            long double num;
+            eqnInput >> num;
+            numStack.push(num);
         }
-        else if (OPERATORS.find(postfixEqn[i]) != string::npos)
+        else if (OPERATORS.find(static_cast<char>(eqnInput.peek())) != string::npos)
         {
-            int op[2];  //operands
+            long double op[2];  //operands
             op[1] = numStack.top();
             numStack.pop();
             op[0] = numStack.top();
             numStack.pop();
 
-            switch (postfixEqn[i]) {
+            switch (eqnInput.get()) {
                 case '+':
                 numStack.push(op[0] + op[1]);
                 break;
@@ -228,8 +214,10 @@ float evaluatePostfix(string postfixEqn) {
 
                 case '/':
                 numStack.push(op[0] / op[1]);
+                break;
             }
         }
+        eqnInput.ignore();
     }
 
     return numStack.top();

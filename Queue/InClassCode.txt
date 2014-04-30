@@ -1,0 +1,101 @@
+#include <iostream>
+using namespace std;
+
+//A queue is a FIFO (first-in-first-out data structure
+
+const int SIZE = 5;
+
+class QueueA {
+    private:
+    int data[SIZE];
+    int front;
+    int back;
+    void inc(int& x) {//increment
+        x++;
+        if (x >= SIZE)
+            x = 0;
+        //equivalent: (x+1)%SIZE
+    }
+
+    public:
+    QueueA() {
+        front = 0;  //index of the next element to dequeue
+        back = 0;  //index of the next element to add something
+    }
+    bool enq(int x) {
+        if (full())
+            return false;
+        data[back] = x;
+        inc(back);
+        return true;
+    }
+    bool deq(int& x) {
+        if (back == front)  //if empty
+            return false;
+        x = data[front];
+        inc(front);
+        return true;
+    }
+    bool full() {
+        int b2 = back;
+        inc(b2);
+        if (b2 == front)
+            return true;
+        else
+            return false;
+    }
+    bool empty() {
+        return (back == front) ? true : false;
+    }
+};
+
+class QueueLL {
+    private:
+    struct Node {
+        int data;
+        Node* next;
+    };
+    Node* front;
+    Node* back;
+
+    public:
+    QueueLL() {
+        front = NULL;
+        back = NULL;
+    }
+    void enq(int x) {
+        Node* nn = new Node;
+        nn->data = x;
+        nn->next = NULL;
+        if (back != NULL)
+            back->next = nn;
+        back = nn;
+        if (front == NULL)
+            front = nn;
+    }
+    bool deq(int& x) {
+        if (front == NULL)
+            return false;
+        x = front->data;
+        Node* n2d = front;  //node to delete
+        front = front->next;
+        delete n2d;
+        if (front == NULL)
+            back = NULL;
+        return true;
+    }
+};
+
+int main() {
+    QueueLL test;
+    test.enq(5);
+    test.enq(7);
+    test.enq(9);
+    test.enq(10);
+    int x;
+    for (int i = 0; i < 4; i++)
+    {
+        test.deq(x);
+        cout << x << endl;
+    }
+}

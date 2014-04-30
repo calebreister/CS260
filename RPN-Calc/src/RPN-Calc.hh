@@ -15,10 +15,14 @@
 #include <utility>
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
+#include <typeinfo>
+#include <cmath>
 
-const std::string NUMBERS = "1234567890";
+const std::string NUMBERS = "1234567890.";
 const std::string OPERATORS = "+-*/";
 const std::string LEGAL = NUMBERS + OPERATORS + "()Q";
+const char DELIM = ' ';
 
 /////////////////////////////////////////////////////////////////
 ///@brief An exception class that is thrown when an illegal character is entered by the user
@@ -39,8 +43,8 @@ struct open_paren : public std::exception
   }
 };
 
-///@brief Thrown when an operator is placed at the end of an infix expression
-struct op_at_end : public std::exception
+///@brief Thrown when an operator is placed at the end or beginning of an infix expression
+struct invalid_op : public std::exception
 {
   const char * what() const throw ()
   {
@@ -50,9 +54,9 @@ struct op_at_end : public std::exception
 
 /////////////////////////////////////////////////////////////////////////////////////
 std::string userInput();
-void validateInfix(std::string& infix) throw (illegal_char, open_paren, op_at_end);
+void validateInfix(std::string& infix) throw (illegal_char, open_paren, invalid_op);
 std::string postfixify(const std::string& infixEqn);
-float evaluatePostfix(std::string postfixEqn);
+long double evaluatePostfix(std::string postfixEqn);
 int getPrecedence(char op);
 int countChar(const std::string& input, char ch);
 

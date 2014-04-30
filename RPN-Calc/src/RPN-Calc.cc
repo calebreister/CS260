@@ -6,20 +6,6 @@
 #include "RPN-Calc.hh"
 using namespace std;
 
-const string NUMBERS = "1234567890.";
-const string OPERATORS = "+-*/";
-const string LEGAL = NUMBERS + OPERATORS + "()Q";
-//const char DELIM = '';  //Delimiter for postfix string
-
-// Curly brace formatting rule:
-//Anything that is commonly nested needs a curly brace on its own line.
-//This includes for and while loops, and if/else if/else statements
-//Switches will easily get confusing if they are nested, so the top brace
-//can be on the same line as the switch.
-//Other statements that can have the brace on 1 line are:
-//functions, classes/structs, initializer lists, lambda functions,
-//try/catch statements, and enums
-////////////////////////////////////////////////////////////////////////////////////
 int main() {
     cout << "LEGAL CHARACTERS: \"1234567890+-*/()Q.,\"\n"
          << "Entering \"Q\" quits the program.\n"
@@ -70,10 +56,7 @@ string userInput() {
  * @param infix The infix equation to format and validate
  * @throws std::invalid_argument
  *
- * Note that this function relies on the following statements:
- * const string NUMBERS = "1234567890.";
- * const string OPERATORS = "+-*()/";
- * const string LEGAL = NUMBERS + OPERATORS + "Q";
+ * NOTE: this function relies on the constants defined in the header
  */
 void validateInfix(string& infix) throw (illegal_char, open_paren, op_at_end) {
     infix.erase(remove_if(infix.begin(), infix.end(),  //beginning and end iterators for std::remove
@@ -194,7 +177,7 @@ string postfixify(const string& infixEqn) {
  * @param postfixEqn A string containing a valid postfix (RPN) expression delimited with DELIM
  * @return The result of the calculation
  *
-   Conversion algorithm from Wikipedia, converted to be fully iterative and suit my format.
+   Conversion algorithm from Wikipedia, converted to be fully iterative, no goto's.
 
    1. Read one character input at a time and keep pushing it into the character stack until the new
       line character is reached
@@ -206,9 +189,9 @@ string postfixify(const string& infixEqn) {
       3. Calculate op1 op op2 and push the output into the integer stack. Go to step (2)
    3. Pop the result from the integer stack and display the result
  */
-long double evaluatePostfix(string postfixEqn) {
+float evaluatePostfix(string postfixEqn) {
     stack<char> chStack;  //character stack
-    stack<long double> numStack;  //number stack
+    stack<int> numStack;  //number stack
 
     for (string::size_type i = 0; postfixEqn[i] != '\0'; i++)
     {
@@ -224,7 +207,7 @@ long double evaluatePostfix(string postfixEqn) {
         }
         else if (OPERATORS.find(postfixEqn[i]) != string::npos)
         {
-            long double op[2];  //operands
+            int op[2];  //operands
             op[1] = numStack.top();
             numStack.pop();
             op[0] = numStack.top();
@@ -253,6 +236,11 @@ long double evaluatePostfix(string postfixEqn) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+/**@brief Returns the precedence of an operator, specifically built for the infix to postfix
+ *  converter
+ * @param op The operator to check
+ * @return 1 if input is + or -, 2 if * or /, 0 otherwise.
+ */
 int getPrecedence(char op) {
     switch (op) {
         case '+':
@@ -266,11 +254,15 @@ int getPrecedence(char op) {
         break;
     }
 
-    //deals with parenthesis
     return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+/**@brief Counts the occurrences of a character in a string
+ * @param input The string in which to count
+ * @param ch The character to search for
+ * @return The number of occurrences of the given character
+ */
 int countChar(const string& input, char ch) {
     int result = 0;
     for (string::size_type i = 0; i < input.length(); i++)

@@ -16,6 +16,12 @@
 #include <cstdlib>
 #include <cstring>
 
+const std::string NUMBERS = "1234567890";
+const std::string OPERATORS = "+-*/";
+const std::string LEGAL = NUMBERS + OPERATORS + "()Q";
+
+/////////////////////////////////////////////////////////////////
+///@brief An exception class that is thrown when an illegal character is entered by the user
 struct illegal_char : public std::exception
 {
   const char * what() const throw ()
@@ -24,6 +30,7 @@ struct illegal_char : public std::exception
   }
 };
 
+///@brief Thrown when the user enters mismatching parenthesis
 struct open_paren : public std::exception
 {
   const char * what() const throw ()
@@ -32,6 +39,7 @@ struct open_paren : public std::exception
   }
 };
 
+///@brief Thrown when an operator is placed at the end of an infix expression
 struct op_at_end : public std::exception
 {
   const char * what() const throw ()
@@ -40,111 +48,22 @@ struct op_at_end : public std::exception
   }
 };
 
+/////////////////////////////////////////////////////////////////////////////////////
 std::string userInput();
 void validateInfix(std::string& infix) throw (illegal_char, open_paren, op_at_end);
 std::string postfixify(const std::string& infixEqn);
-long double evaluatePostfix(std::string postfixEqn);
+float evaluatePostfix(std::string postfixEqn);
 int getPrecedence(char op);
 int countChar(const std::string& input, char ch);
 
-/*Stack Implementation Example
- * //STACKS
-/* Stacks can be implemented with either an array or a Linked List.
- *
- * Stacks MUST use LIFO
- * Last
- * IN
- * First
- * OUT
- *
- * Stack operations:
- * push - add something to the top
- * pop - remove something from the top
- *//*
-
-#include <iostream>
-using namespace std;
-
-const unsigned int SIZE = 10;
-
-class StackArray {
-    private:
-    unsigned int top = 0;
-    int data[SIZE];
-
-    public:
-    bool push(int x) {
-        if (top < SIZE)
-        {
-            data[top] = x;
-            top++;
-            return true;
-        }
-        else
-            return false;
-    }
-    bool pop(int& x) {
-        if (empty())
-            return false;
-
-        x = data[--top];
-        return true;
-    }
-    bool empty() {
-        return top == 0 ? true : false;
-    }
-};*/
-
-/*
- * A LinkedList may or may not take more memory.
- * If you have an array of 1000 ints, but only use 10, the array is
- * far less efficient.
- * If you a linked list instead, it will be more efficient
- * However, a linked list of 1000 ints will take around 2x the space
- * of an array with 1000 ints.
- */
-/*class StackLL {
-    private:
-    struct Node {
-        int data;
-        Node* next = NULL;
-    };
-    Node* top = NULL;
-
-    public:
-    bool empty() {
-        return top == NULL ? true : false;
-    }
-    void push(int data) {
-        Node* n = new Node;
-        n->data = data;
-        n->next = top;
-        top = n;
-    }
-    bool pop(int& dataOut) {
-        if (empty())
-            return false;
-        dataOut = top->data;
-        Node* n2d = top;  //Node to delete
-        top = top->next;
-        delete n2d;
-        return true;
-    }
-};
-
-
-int main() {
-    TEST CODE
-    StackLL s;
-    s.push(4);
-    s.push(10);
-    s.push(-56);
-    s.push(1);
-
-    int x;
-    while (s.pop(x))
-        cout << x << endl;
-}
- */
+//////////////////////////////////////////////////////////////////////////////////
+//Curly brace formatting rule:
+//Anything that is commonly nested needs a curly brace on its own line.
+//This includes for and while loops, and if/else if/else statements
+//Switches will easily get confusing if they are nested, so the top brace
+//can be on the same line as the switch.
+//Other statements that can have the brace on 1 line are:
+//functions, classes/structs, initializer lists, lambda functions,
+//try/catch statements, and enums
 
 #endif

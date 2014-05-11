@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="DoublyLinkedList" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/DoublyLinkedList" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="CS260A2-DoublyLinkedlistTemplate.pdf" />
+		<Unit filename="Debug/DoublyLinkedList" />
+		<Unit filename="Debug/makefile" />
+		<Unit filename="Debug/objects.mk" />
+		<Unit filename="Debug/sources.mk" />
+		<Unit filename="Debug/src/Array.d" />
+		<Unit filename="Debug/src/Dog.d" />
+		<Unit filename="Debug/src/Dog.o" />
+		<Unit filename="Debug/src/subdir.mk" />
+		<Unit filename="Debug/src/testCode.d" />
+		<Unit filename="Debug/src/testCode.o" />
+		<Unit filename="DoublyLinkedList.zip" />
+		<Unit filename="Doxyfile" />
+		<Unit filename="VN810147.MP3" />
+		<Unit filename="VN810149.MP3" />
+		<Unit filename="doc/html/_dog_8cc_source.html" />
+		<Unit filename="doc/html/_dog_8hh.html" />
+		<Unit filename="doc/html/_dog_8hh.js" />
+		<Unit filename="doc/html/_dog_8hh__dep__incl.dot" />
+		<Unit filename="doc/html/_dog_8hh__dep__incl.md5" />
+		<Unit filename="doc/html/_dog_8hh__incl.dot" />
+		<Unit filename="doc/html/_dog_8hh__incl.md5" />
+		<Unit filename="doc/html/_dog_8hh_source.html" />
+		<Unit filename="doc/html/_doubly_linked_list_8hh.html" />
+		<Unit filename="doc/html/_doubly_linked_list_8hh.js" />
+		<Unit filename="doc/html/_doubly_linked_list_8hh__dep__incl.dot" />
+		<Unit filename="doc/html/_doubly_linked_list_8hh__dep__incl.md5" />
+		<Unit filename="doc/html/_doubly_linked_list_8hh__incl.dot" />
+		<Unit filename="doc/html/_doubly_linked_list_8hh__incl.md5" />
+		<Unit filename="doc/html/_doubly_linked_list_8hh_source.html" />
+		<Unit filename="doc/html/annotated.html" />
+		<Unit filename="doc/html/annotated.js" />
+		<Unit filename="doc/html/bc_s.png" />
+		<Unit filename="doc/html/bdwn.png" />
+		<Unit filename="doc/html/class_doubly_linked_list-members.html" />
+		<Unit filename="doc/html/class_doubly_linked_list.html" />
+		<Unit filename="doc/html/class_doubly_linked_list.js" />
+		<Unit filename="doc/html/class_doubly_linked_list_a8bfdbb7bf2aba9d33e921fe645bc5c87_icgraph.dot" />
+		<Unit filename="doc/html/class_doubly_linked_list_a8bfdbb7bf2aba9d33e921fe645bc5c87_icgraph.md5" />
+		<Unit filename="doc/html/class_doubly_linked_list_af4a2a864554ba447140648f17344c5f3_icgraph.dot" />
+		<Unit filename="doc/html/class_doubly_linked_list_af4a2a864554ba447140648f17344c5f3_icgraph.md5" />
+		<Unit filename="doc/html/classes.html" />
+		<Unit filename="doc/html/closed.png" />
+		<Unit filename="doc/html/dir_68267d1309a1af8e8297ef4c3efbcdba.html" />
+		<Unit filename="doc/html/dir_68267d1309a1af8e8297ef4c3efbcdba.js" />
+		<Unit filename="doc/html/dir_68267d1309a1af8e8297ef4c3efbcdba_dep.dot" />
+		<Unit filename="doc/html/dir_68267d1309a1af8e8297ef4c3efbcdba_dep.md5" />
+		<Unit filename="doc/html/doxygen.css" />
+		<Unit filename="doc/html/doxygen.png" />
+		<Unit filename="doc/html/dynsections.js" />
+		<Unit filename="doc/html/files.html" />
+		<Unit filename="doc/html/files.js" />
+		<Unit filename="doc/html/ftv2blank.png" />
+		<Unit filename="doc/html/ftv2cl.png" />
+		<Unit filename="doc/html/ftv2doc.png" />
+		<Unit filename="doc/html/ftv2folderclosed.png" />
+		<Unit filename="doc/html/ftv2folderopen.png" />
+		<Unit filename="doc/html/ftv2lastnode.png" />
+		<Unit filename="doc/html/ftv2link.png" />
+		<Unit filename="doc/html/ftv2mlastnode.png" />
+		<Unit filename="doc/html/ftv2mnode.png" />
+		<Unit filename="doc/html/ftv2mo.png" />
+		<Unit filename="doc/html/ftv2node.png" />
+		<Unit filename="doc/html/ftv2ns.png" />
+		<Unit filename="doc/html/ftv2plastnode.png" />
+		<Unit filename="doc/html/ftv2pnode.png" />
+		<Unit filename="doc/html/ftv2splitbar.png" />
+		<Unit filename="doc/html/ftv2vertline.png" />
+		<Unit filename="doc/html/functions.html" />
+		<Unit filename="doc/html/functions_func.html" />
+		<Unit filename="doc/html/functions_rela.html" />
+		<Unit filename="doc/html/globals.html" />
+		<Unit filename="doc/html/globals_func.html" />
+		<Unit filename="doc/html/graph_legend.dot" />
+		<Unit filename="doc/html/graph_legend.html" />
+		<Unit filename="doc/html/graph_legend.md5" />
+		<Unit filename="doc/html/index.html" />
+		<Unit filename="doc/html/jquery.js" />
+		<Unit filename="doc/html/nav_f.png" />
+		<Unit filename="doc/html/nav_g.png" />
+		<Unit filename="doc/html/nav_h.png" />
+		<Unit filename="doc/html/navtree.css" />
+		<Unit filename="doc/html/navtree.js" />
+		<Unit filename="doc/html/navtreeindex0.js" />
+		<Unit filename="doc/html/open.png" />
+		<Unit filename="doc/html/resize.js" />
+		<Unit filename="doc/html/search/all_0.html" />
+		<Unit filename="doc/html/search/all_0.js" />
+		<Unit filename="doc/html/search/all_1.html" />
+		<Unit filename="doc/html/search/all_1.js" />
+		<Unit filename="doc/html/search/all_2.html" />
+		<Unit filename="doc/html/search/all_2.js" />
+		<Unit filename="doc/html/search/all_3.html" />
+		<Unit filename="doc/html/search/all_3.js" />
+		<Unit filename="doc/html/search/all_4.html" />
+		<Unit filename="doc/html/search/all_4.js" />
+		<Unit filename="doc/html/search/all_5.html" />
+		<Unit filename="doc/html/search/all_5.js" />
+		<Unit filename="doc/html/search/all_6.html" />
+		<Unit filename="doc/html/search/all_6.js" />
+		<Unit filename="doc/html/search/all_7.html" />
+		<Unit filename="doc/html/search/all_7.js" />
+		<Unit filename="doc/html/search/classes_0.html" />
+		<Unit filename="doc/html/search/classes_0.js" />
+		<Unit filename="doc/html/search/classes_1.html" />
+		<Unit filename="doc/html/search/classes_1.js" />
+		<Unit filename="doc/html/search/close.png" />
+		<Unit filename="doc/html/search/files_0.html" />
+		<Unit filename="doc/html/search/files_0.js" />
+		<Unit filename="doc/html/search/files_1.html" />
+		<Unit filename="doc/html/search/files_1.js" />
+		<Unit filename="doc/html/search/functions_0.html" />
+		<Unit filename="doc/html/search/functions_0.js" />
+		<Unit filename="doc/html/search/functions_1.html" />
+		<Unit filename="doc/html/search/functions_1.js" />
+		<Unit filename="doc/html/search/functions_2.html" />
+		<Unit filename="doc/html/search/functions_2.js" />
+		<Unit filename="doc/html/search/functions_3.html" />
+		<Unit filename="doc/html/search/functions_3.js" />
+		<Unit filename="doc/html/search/functions_4.html" />
+		<Unit filename="doc/html/search/functions_4.js" />
+		<Unit filename="doc/html/search/mag_sel.png" />
+		<Unit filename="doc/html/search/nomatches.html" />
+		<Unit filename="doc/html/search/related_0.html" />
+		<Unit filename="doc/html/search/related_0.js" />
+		<Unit filename="doc/html/search/search.css" />
+		<Unit filename="doc/html/search/search.js" />
+		<Unit filename="doc/html/search/search_l.png" />
+		<Unit filename="doc/html/search/search_m.png" />
+		<Unit filename="doc/html/search/search_r.png" />
+		<Unit filename="doc/html/struct_dog-members.html" />
+		<Unit filename="doc/html/struct_dog.html" />
+		<Unit filename="doc/html/struct_dog.js" />
+		<Unit filename="doc/html/struct_node-members.html" />
+		<Unit filename="doc/html/struct_node.html" />
+		<Unit filename="doc/html/struct_node.js" />
+		<Unit filename="doc/html/sync_off.png" />
+		<Unit filename="doc/html/sync_on.png" />
+		<Unit filename="doc/html/tab_a.png" />
+		<Unit filename="doc/html/tab_b.png" />
+		<Unit filename="doc/html/tab_h.png" />
+		<Unit filename="doc/html/tab_s.png" />
+		<Unit filename="doc/html/tabs.css" />
+		<Unit filename="doc/html/test_code_8cc.html" />
+		<Unit filename="doc/html/test_code_8cc.js" />
+		<Unit filename="doc/html/test_code_8cc__incl.dot" />
+		<Unit filename="doc/html/test_code_8cc__incl.md5" />
+		<Unit filename="doc/html/test_code_8cc_a02891d05feb887b299dd9379524d2ae3_cgraph.dot" />
+		<Unit filename="doc/html/test_code_8cc_a02891d05feb887b299dd9379524d2ae3_cgraph.md5" />
+		<Unit filename="doc/html/test_code_8cc_source.html" />
+		<Unit filename="src/Dog.cc" />
+		<Unit filename="src/Dog.hh" />
+		<Unit filename="src/DoublyLinkedList.hh" />
+		<Unit filename="src/testCode.cc" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

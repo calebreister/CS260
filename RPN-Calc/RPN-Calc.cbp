@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="RPN-Calc" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/RPN-Calc" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="CS260A3-Stacks.pdf" />
+		<Unit filename="Debug/RPN-Calc" />
+		<Unit filename="Debug/makefile" />
+		<Unit filename="Debug/objects.mk" />
+		<Unit filename="Debug/sources.mk" />
+		<Unit filename="Debug/src/RPN-Calc.d" />
+		<Unit filename="Debug/src/RPN-Calc.o" />
+		<Unit filename="Debug/src/subdir.mk" />
+		<Unit filename="Debug/subdir.mk" />
+		<Unit filename="Doxyfile" />
+		<Unit filename="InClassCode.txt" />
+		<Unit filename="RPN-Calc.zip" />
+		<Unit filename="VN810151.MP3" />
+		<Unit filename="doc/html/_r_p_n-_calc_8cc_source.html" />
+		<Unit filename="doc/html/_r_p_n-_calc_8hh.html" />
+		<Unit filename="doc/html/_r_p_n-_calc_8hh.js" />
+		<Unit filename="doc/html/_r_p_n-_calc_8hh_source.html" />
+		<Unit filename="doc/html/annotated.html" />
+		<Unit filename="doc/html/annotated.js" />
+		<Unit filename="doc/html/bc_s.png" />
+		<Unit filename="doc/html/bdwn.png" />
+		<Unit filename="doc/html/classes.html" />
+		<Unit filename="doc/html/closed.png" />
+		<Unit filename="doc/html/dir_68267d1309a1af8e8297ef4c3efbcdba.html" />
+		<Unit filename="doc/html/dir_68267d1309a1af8e8297ef4c3efbcdba.js" />
+		<Unit filename="doc/html/doxygen.css" />
+		<Unit filename="doc/html/doxygen.png" />
+		<Unit filename="doc/html/dynsections.js" />
+		<Unit filename="doc/html/files.html" />
+		<Unit filename="doc/html/files.js" />
+		<Unit filename="doc/html/ftv2blank.png" />
+		<Unit filename="doc/html/ftv2cl.png" />
+		<Unit filename="doc/html/ftv2doc.png" />
+		<Unit filename="doc/html/ftv2folderclosed.png" />
+		<Unit filename="doc/html/ftv2folderopen.png" />
+		<Unit filename="doc/html/ftv2lastnode.png" />
+		<Unit filename="doc/html/ftv2link.png" />
+		<Unit filename="doc/html/ftv2mlastnode.png" />
+		<Unit filename="doc/html/ftv2mnode.png" />
+		<Unit filename="doc/html/ftv2mo.png" />
+		<Unit filename="doc/html/ftv2node.png" />
+		<Unit filename="doc/html/ftv2ns.png" />
+		<Unit filename="doc/html/ftv2plastnode.png" />
+		<Unit filename="doc/html/ftv2pnode.png" />
+		<Unit filename="doc/html/ftv2splitbar.png" />
+		<Unit filename="doc/html/ftv2vertline.png" />
+		<Unit filename="doc/html/globals.html" />
+		<Unit filename="doc/html/globals_func.html" />
+		<Unit filename="doc/html/hierarchy.html" />
+		<Unit filename="doc/html/hierarchy.js" />
+		<Unit filename="doc/html/index.html" />
+		<Unit filename="doc/html/jquery.js" />
+		<Unit filename="doc/html/nav_f.png" />
+		<Unit filename="doc/html/nav_g.png" />
+		<Unit filename="doc/html/nav_h.png" />
+		<Unit filename="doc/html/navtree.css" />
+		<Unit filename="doc/html/navtree.js" />
+		<Unit filename="doc/html/navtreeindex0.js" />
+		<Unit filename="doc/html/open.png" />
+		<Unit filename="doc/html/resize.js" />
+		<Unit filename="doc/html/search/all_0.html" />
+		<Unit filename="doc/html/search/all_0.js" />
+		<Unit filename="doc/html/search/all_1.html" />
+		<Unit filename="doc/html/search/all_1.js" />
+		<Unit filename="doc/html/search/all_2.html" />
+		<Unit filename="doc/html/search/all_2.js" />
+		<Unit filename="doc/html/search/all_3.html" />
+		<Unit filename="doc/html/search/all_3.js" />
+		<Unit filename="doc/html/search/all_4.html" />
+		<Unit filename="doc/html/search/all_4.js" />
+		<Unit filename="doc/html/search/classes_0.html" />
+		<Unit filename="doc/html/search/classes_0.js" />
+		<Unit filename="doc/html/search/classes_1.html" />
+		<Unit filename="doc/html/search/classes_1.js" />
+		<Unit filename="doc/html/search/close.png" />
+		<Unit filename="doc/html/search/files_0.html" />
+		<Unit filename="doc/html/search/files_0.js" />
+		<Unit filename="doc/html/search/functions_0.html" />
+		<Unit filename="doc/html/search/functions_0.js" />
+		<Unit filename="doc/html/search/functions_1.html" />
+		<Unit filename="doc/html/search/functions_1.js" />
+		<Unit filename="doc/html/search/mag_sel.png" />
+		<Unit filename="doc/html/search/nomatches.html" />
+		<Unit filename="doc/html/search/search.css" />
+		<Unit filename="doc/html/search/search.js" />
+		<Unit filename="doc/html/search/search_l.png" />
+		<Unit filename="doc/html/search/search_m.png" />
+		<Unit filename="doc/html/search/search_r.png" />
+		<Unit filename="doc/html/structillegal__char-members.html" />
+		<Unit filename="doc/html/structillegal__char.html" />
+		<Unit filename="doc/html/structillegal__char.js" />
+		<Unit filename="doc/html/structillegal__char.png" />
+		<Unit filename="doc/html/structop__at__end-members.html" />
+		<Unit filename="doc/html/structop__at__end.html" />
+		<Unit filename="doc/html/structop__at__end.js" />
+		<Unit filename="doc/html/structop__at__end.png" />
+		<Unit filename="doc/html/structopen__paren-members.html" />
+		<Unit filename="doc/html/structopen__paren.html" />
+		<Unit filename="doc/html/structopen__paren.js" />
+		<Unit filename="doc/html/structopen__paren.png" />
+		<Unit filename="doc/html/sync_off.png" />
+		<Unit filename="doc/html/sync_on.png" />
+		<Unit filename="doc/html/tab_a.png" />
+		<Unit filename="doc/html/tab_b.png" />
+		<Unit filename="doc/html/tab_h.png" />
+		<Unit filename="doc/html/tab_s.png" />
+		<Unit filename="doc/html/tabs.css" />
+		<Unit filename="src/RPN-Calc.cc" />
+		<Unit filename="src/RPN-Calc.hh" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

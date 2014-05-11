@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="DoublyLinkedList/DoublyLinkedList.cbp" />
+		<Project filename="KnightTour/KnightTour.cbp" />
+		<Project filename="LinkedList/LinkedList.cbp" />
+		<Project filename="Queue/Queue.cbp" />
+		<Project filename="RPN-Calc/RPN-Calc.cbp" />
+		<Project filename="ScratchPad/ScratchPad.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>

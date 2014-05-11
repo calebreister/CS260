@@ -1,5 +1,14 @@
-/**@file
- * @author Caleb Reister <calebreister@gmail.com>
+/**@file Simulation.cc
+   @author Caleb Reister <calebreister@gmail.com>
+ */
+/**@mainpage CPU Scheduler Simulation
+This project is a demonstration of the capabilities of queues and is a simple
+implementation of a priority queue. This program is designed to take any number
+of data files as input and it simulates a multilevel feedback queue. The console
+output can be copied into a CSV file and opened in a spreadsheet.
+
+- The input file is described in "::"buildJobQueue
+- The simulation is documented in "::"runSimulation
  */
 
 #include <iostream>
@@ -15,48 +24,6 @@ void printProcessHeading(ostream& stream);
 void printProcessData(ostream& stream, const Process& data, const uint32_t& clock);
 void runSimulation(queue<Process>& future, PriorityQueue& running,
                    const uint32_t& SLICE, const uint32_t& PULL_FREQ);
-
-/*NEW LAYOUT:
-- Everything from file comes into a future jobs queue
-- Every slice, a new process is pulled from the future queue
-  and placed into the feedback queue
----------------------------------------------------------------
-struct process:
-    pid
-    initial priority
-    time required
-    current priority
-    time started
-    time finished (optional)
-    time remaining
-----------------------------------------------------------------
-SimTime=0
-NextJobArrivesTime=0
-CpuAvailableTime=0
-while (!futureProcesQ.empty() or !PriorityQ.empty() or CPU ! busy)
-	//new job shows up to be run
-	If (SimTime == NextJobArrivesTime)
-		Take Job Off FutureProcessQue
-		Initialize it (PID, start time, etc..)
-		Put it in the Priorty Q
-		NextJobArrivesTime+=15;
-	if (SimTime == CpuAvailableTime)
-		If it's currently running a job
-			Adjust it's properties (time ran, priority, etc..)
-			If it's done
-				print out process data and delete it
-			else
-				Insert that job back into PriorityQ (priority less)
-		If PriorityQ is not empty
-			DeQueue next job to run, assign to cpu
-			if (timeremaining<TIMESLICE
-				cpuAvailableTime+=timeRemaining
-			else
-				cpuAvailable+=TIMESLICE
-		else
-			cpuAvailableTime = NextJobArriveTime
-	Increment SimTime to either NextJobArrivesTime or CpuAvailableTime (whichever is lower)
-*/
 
 int main(int argc, char* argv[]) {
     if (argc <= 1)
@@ -159,6 +126,34 @@ void printProcessData(ostream& stream, const Process& data,
            << setw(15) << clock << endl;
 }
 
+/**
+The scheduler operates as follows...
+
+    initialize the clock to 0
+    get the first process and add it to the priority queue
+    do
+        if x number of time slices have passed:
+            get the next item from the future queue
+        else
+            increment time slices passed
+
+        if the CPU is idle
+            force a new job to be pulled
+        else
+            if the current job has < a time slice left
+                increment the clock the amount of ticks the process took to complete
+            else
+                add a full slice to the clock
+                subtract a slice from the process' time left
+
+            if the job is done
+                print it out and discard it
+            else
+                decrement the priority
+
+        get the next job from the priority queue
+    while the priority queue or future job queue is not empty
+ */
 void runSimulation(queue<Process>& future, PriorityQueue& running,
                    const uint32_t& SLICE, const uint32_t& PULL_FREQ) {
     //naming rule: a job refers to what the CPU is running for a single SLICE

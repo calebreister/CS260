@@ -38,12 +38,14 @@ void PriorityQueue::push(queue<Process>& source, const uint32_t& clock) {
 }
 
 Process* PriorityQueue::getNext() {
-    uint32_t i = 0;
-    while (schedule[i].empty())
+    if (this->empty())
+        return NULL;
+    uint32_t i = LEVELS - 1;
+    while (schedule[i].empty() && i != 0)
     {
-        if (i == LEVELS)
-            return NULL;
-        i++;
+        //if (i == LEVELS)
+        //    return NULL;
+        i--;
     }
 
     Process* output = new Process;

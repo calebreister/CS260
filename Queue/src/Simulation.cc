@@ -59,17 +59,17 @@ while (!futureProcesQ.empty() or !PriorityQ.empty() or CPU ! busy)
 */
 
 int main(int argc, char* argv[]) {
-    /*if (argc <= 1)
+    if (argc <= 1)
     {
         cout << "No input file specified.\n";
         return 1;
-    }*/
+    }
 
     PriorityQueue* runningProcesses;
     //sim is the simulation index, this program supports
     //multiple input files
-    /*for (uint32_t sim = 1; sim < argc; sim++)
-    {*/
+    for (uint32_t sim = 1; sim < argc; sim++)
+    {
         queue<Process> futureProcesses;
         //cout << argv[sim] << endl;
         printProcessHeading(cout);
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
         //clean up
         delete runningProcesses;
         cout << "------------------------------------\n\n";
-    //}
+    }
 }
 
 //TODO: fix this comment, it is outdated
@@ -126,16 +126,15 @@ Working example:
     1 100
  */
 void buildJobQueue(ifstream& inFile, queue<Process>& jobs) {
-    uint32_t pid = 0;
-    while (!inFile.eof())
+    Process current;
+    //using the inFile.eof() method results in the last line being read
+    //twice, it is only triggered after the end it actually reached
+    while (inFile >> current._initialPriority >> current._timeRequired)
     {
-        Process current;
-        inFile >> current._initialPriority >> current._timeRequired;
         current.priority = current._initialPriority;
         current.timeLeft = current._timeRequired;
 
         jobs.push(current);
-        pid++;
     }
 }
 
@@ -152,12 +151,12 @@ void printProcessData(ostream& stream, const Process& data,
                       const uint32_t& clock) {
     //PID, INITIAL_PRIORITY, FINAL_PRIORITY, TIME_REQUIRED,
     //TIME_SUBMITTED, TIME_COMPLETED"
-    stream << setw(5) << data._pid << ","
-           << setw(20) << data._initialPriority << ","
-           << setw(20) << data.priority << ","
-           << setw(15) << data._timeRequired << ","
-           << setw(15) << data._startTime << ","
-           << setw(20) << clock;
+    stream << setw(4) << data._pid << ","
+           << setw(19) << data._initialPriority << ","
+           << setw(19) << data.priority << ","
+           << setw(14) << data._timeRequired << ","
+           << setw(14) << data._startTime << ","
+           << setw(15) << clock << endl;
 }
 
 void runSimulation(queue<Process>& future, PriorityQueue& running,

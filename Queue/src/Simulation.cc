@@ -1,14 +1,46 @@
-/**@file Simulation.cc
-   @author Caleb Reister <calebreister@gmail.com>
- */
+///@file Simulation.cc
+///@author Caleb Reister <calebreister@gmail.com>
 /**@mainpage CPU Scheduler Simulation
 This project is a demonstration of the capabilities of queues and is a simple
 implementation of a priority queue. This program is designed to take any number
 of data files as input and it simulates a multilevel feedback queue. The console
 output can be copied into a CSV file and opened in a spreadsheet.
 
-- The input file is described in "::"buildJobQueue
-- The simulation is documented in "::"runSimulation
+Links:
+
+- The input file format is described in "::"buildJobQueue
+- The simulation logic is documented in "::"runSimulation
+- Process data is stored in the "::"Process struct
+
+Terminology:
+
+- The *clock* refers to the system timer
+    - It always counts up, and any time that passes is added to it
+    - It measures everything in **ticks**, an imaginary time unit that is
+      defined relative to itself. Because this is a simulation, it does not
+      increment at a constant rate.
+- A *time slice* or *slice* is a cycle of the CPU, it defines how long the CPU
+  works on a single process
+  - A slice defines the most that the clock can possibly increment per CPU cycle
+  - It defines how often the CPU switches jobs
+- A *process* is a task for the CPU that spans multiple time slices
+  - Running processes are stored in a priority queue, called **running**
+  - Processes that the CPU does not know about yet, the part that makes
+    this program a simulation, are stored in a queue called **future**
+- A *job* refers to the current process being run by the CPU
+  - Always points to a process
+  - A job runs for a single slice or less, depending on the time the process
+    the job refers to has left
+  - Once a job is completed, one of two things will happen
+    1. It is re-added to the priority queue with a lower priority
+    2. If the time left is 0, its data is printed to the console and the
+       process is discarded
+- The *pull frequency* refers to the number of slices that pass before a new
+  process is automatically pulled from the future processes queue
+  - If the CPU runs out of running processes, this will be triggered
+    automatically, and a new process will be pulled from the future
+    queue early
+  - If both the future and running process queues are empty, the program exits
  */
 
 #include <iostream>
@@ -19,11 +51,11 @@ output can be copied into a CSV file and opened in a spreadsheet.
 #include "Process.hh"
 using namespace std;
 
-void buildJobQueue(ifstream& inFile, queue<Process>& jobs);
+void buildFutureQueue(ifstream& source, queue<Process>& dest);
 void printProcessHeading(ostream& stream);
 void printProcessData(ostream& stream, const Process& data, const uint32_t& clock);
 void runSimulation(queue<Process>& future, PriorityQueue& running,
-                   const uint32_t& SLICE, const uint32_t& PULL_FREQ);
+                   const uint32_t& SLICE, const uint32_t& PULL_FREQ = 1);
 
 int main(int argc, char* argv[]) {
     if (argc <= 1)
@@ -46,7 +78,7 @@ int main(int argc, char* argv[]) {
         ifstream simFile;
         simFile.open("test.txt");//argv[sim]);
         simFile >> PRIORITIES >> TIME_SLICE >> FUTURE_PULL;
-        buildJobQueue(simFile, futureProcesses);
+        buildFutureQueue(simFile, futureProcesses);
         simFile.close();
         runningProcesses = new PriorityQueue(PRIORITIES);
 
@@ -58,16 +90,16 @@ int main(int argc, char* argv[]) {
     }
 }
 
-//TODO: fix this comment, it is outdated
-/** @brief Builds a PriorityQueue from an input file
-    @param file The name of the input file to use
-    @param slice The length of a time slice
-    @return A pointer to a PriorityQueue, must be deleted manually
+/**@brief Builds a future processes queue from an input file
+
+   @param source The input file stream to use
+   @param dest The destination queue in which to put the processes
 
 This function expects a file formatted like the following:
 
     <PRIORITIES>
     <TIME_SLICE>
+    <FUTURE_PULL>
 
     <priority> <time_needed>
     <priority> <time_needed>
@@ -75,36 +107,50 @@ This function expects a file formatted like the following:
 
 * Anything in brackets should be replaced by an unsigned integer.
 * The type and layout of whitespace used does not matter.
+* PRIORITIES, TIME_SLICE, and FUTURE_PULL are not input in this function, they
+  must be dealt with beforehand
 * PRIORITIES: the number of priorities to use in the simulation
 * TIME_SLICE: the time quantum (amount of time per cycle) any process can run
+* FUTURE_PULL: the number of slices between automatic future process pulls
 * priority: the starting priority of the process
 * time_needed: the time the process will take to complete
 * Create at many processes as necessary
 * This is a simulation, it runs as fast as possible, the unit of
-  time is completely irrelevant.
+  time used is completely irrelevant.
 
 Working example:
 
     10
     15
+    2
 
     5 50
     7 100
     1 100
+
+After each piece of data is input:
+- **priority** is set to **_initialPriority**
+- **timeLeft** is set to **_timeRequired**
  */
-void buildJobQueue(ifstream& inFile, queue<Process>& jobs) {
+void buildFutureQueue(ifstream& source, queue<Process>& dest) {
     Process current;
     //using the inFile.eof() method results in the last line being read
     //twice, it is only triggered after the end it actually reached
-    while (inFile >> current._initialPriority >> current._timeRequired)
+    while (source >> current._initialPriority >> current._timeRequired)
     {
         current.priority = current._initialPriority;
         current.timeLeft = current._timeRequired;
 
-        jobs.push(current);
+        dest.push(current);
     }
 }
 
+/**@brief Prints a heading for the completed processes table
+   @param stream The output stream to use
+
+Sample output (whitespace is different):
+ PID, PRIORITY_INIT, PRIORITY_FINAL, TIME_REQUIRED, START_TIME, END_TIME
+ */
 void printProcessHeading(ostream& stream) {
     cout << setw(5) << "PID,"
          << setw(20) << "PRIORITY_INIT,"
@@ -114,6 +160,13 @@ void printProcessHeading(ostream& stream) {
          << setw(15) << "END_TIME" << endl;
 }
 
+/**@brief Prints the data members of a completed process, fits the output of
+          "::"printProcessHeading
+   @param stream The output stream to use
+   @param data The process to output
+   @param clock The current time (in ticks), meant to be the time the process
+          ended
+ */
 void printProcessData(ostream& stream, const Process& data,
                       const uint32_t& clock) {
     //PID, INITIAL_PRIORITY, FINAL_PRIORITY, TIME_REQUIRED,
@@ -126,14 +179,20 @@ void printProcessData(ostream& stream, const Process& data,
            << setw(15) << clock << endl;
 }
 
-/**
+/**@brief Runs the CPU scheduling simulation
+   @param future The future processes queue
+   @param running The queue of currently running processes organized by priority
+   @param SLICE The number of ticks a single time slice takes
+   @param PULL_FREQ The number of slices that run before a new process is pulled
+          from the future processes queue automatically
+
 The scheduler operates as follows...
 
     initialize the clock to 0
     get the first process and add it to the priority queue
     do
-        if x number of time slices have passed:
-            get the next item from the future queue
+        if x number of time slices have passed
+            get the next process from the future queue
         else
             increment time slices passed
 
@@ -142,15 +201,17 @@ The scheduler operates as follows...
         else
             if the current job has < a time slice left
                 increment the clock the amount of ticks the process took to complete
+                set the current job's time left to 0
             else
                 add a full slice to the clock
                 subtract a slice from the process' time left
 
-            if the job is done
-                print it out and discard it
+            if the job is done (time left == 0)
+                print the process data out
+                discard the process
             else
-                decrement the priority
-
+                decrement the priority of the process
+                re-add the process to the running queue
         get the next job from the priority queue
     while the priority queue or future job queue is not empty
  */

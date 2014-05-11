@@ -1,3 +1,6 @@
+///@file PriorityQueue.hh
+///@author Caleb Reister <calebreister@gmail.com>
+
 #ifndef MULTILEVELQUEUE_HH
 #define MULTILEVELQUEUE_HH
 
@@ -5,6 +8,8 @@
 #include <cstdint>
 #include "Process.hh"
 
+///@brief Defines a priority queue that stores processes and can return
+///       the highest priority process
 class PriorityQueue {
 private:
     uint32_t LEVELS;  //should not be changed after initialization

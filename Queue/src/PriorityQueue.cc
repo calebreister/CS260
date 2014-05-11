@@ -1,6 +1,5 @@
-/**@file PriorityQueue.cc
- * @author Caleb Reister <calebreister@gmail.com>
- */
+///@file PriorityQueue.cc
+///@author Caleb Reister <calebreister@gmail.com>
 
 #include "PriorityQueue.hh"
 using namespace std;

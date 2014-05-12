@@ -10,6 +10,7 @@
 
 ///@brief Defines a priority queue that stores processes and can return
 ///       the highest priority process
+///The queues are stored in an array where 0 is treated as the lowest priority
 class PriorityQueue {
 private:
     uint32_t LEVELS;  //should not be changed after initialization

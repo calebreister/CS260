@@ -1,12 +1,12 @@
-
-bin
-
 /GitLog.txt
 */doc
 *.zip
 *.~lock.*
 *.lock
 *__pycache__*
+html
+bin
+obj
 
 #Testing program
 ScratchPad

@@ -1,47 +1,5 @@
 ///@file Simulation.cc
 ///@author Caleb Reister <calebreister@gmail.com>
-/**@mainpage CPU Scheduler Simulation
-This project is a demonstration of the capabilities of queues and is a simple
-implementation of a priority queue. This program is designed to take any number
-of data files as input and it simulates a multilevel feedback queue. The console
-output can be copied into a CSV file and opened in a spreadsheet.
-
-Links:
-
-- The input file format is described in "::"buildJobQueue
-- The simulation logic is documented in "::"runSimulation
-- Process data is stored in the "::"Process struct
-
-Terminology:
-
-- The *clock* refers to the system timer
-    - It always counts up, and any time that passes is added to it
-    - It measures everything in **ticks**, an imaginary time unit that is
-      defined relative to itself. Because this is a simulation, it does not
-      increment at a constant rate.
-- A *time slice* or *slice* is a cycle of the CPU, it defines how long the CPU
-  works on a single process
-  - A slice defines the most that the clock can possibly increment per CPU cycle
-  - It defines how often the CPU switches jobs
-- A *process* is a task for the CPU that spans multiple time slices
-  - Running processes are stored in a priority queue, called **running**
-  - Processes that the CPU does not know about yet, the part that makes
-    this program a simulation, are stored in a queue called **future**
-- A *job* refers to the current process being run by the CPU
-  - Always points to a process
-  - A job runs for a single slice or less, depending on the time the process
-    the job refers to has left
-  - Once a job is completed, one of two things will happen
-    1. It is re-added to the priority queue with a lower priority
-    2. If the time left is 0, its data is printed to the console and the
-       process is discarded
-- The *pull frequency* refers to the number of slices that pass before a new
-  process is automatically pulled from the future processes queue
-  - If the CPU runs out of running processes, this will be triggered
-    automatically, and a new process will be pulled from the future
-    queue early
-  - If both the future and running process queues are empty, the program exits
- */
 
 #include <iostream>
 #include <iomanip>
@@ -56,6 +14,55 @@ void printProcessHeading(ostream& stream);
 void printProcessData(ostream& stream, const Process& data, const uint32_t& clock);
 void runSimulation(queue<Process>& future, PriorityQueue& running,
                    const uint32_t& SLICE, const uint32_t& PULL_FREQ = 1);
+
+/**@mainpage CPU Scheduler Simulation
+This project is a demonstration of the capabilities of queues and is a simple
+implementation of a Multilevel Feedback Queue. This program is designed to take
+any number of data files as input and it simulates a multilevel feedback queue.
+The console output can be copied into a CSV file and opened in a spreadsheet.
+
+Command Line Arguments:\n
+This program takes a file or a list of files as input, if no input file is
+provided, it will exit with an error. The files list should be space delimited,
+and any spaces in the path must be escaped.
+
+Links:
+
+- The input file format is described in buildFutureQueue()
+- The simulation logic is documented in runSimulation()
+- Process data is stored in the Process struct
+- The running processes are stored in a PriorityQueue
+
+Terminology:
+
+- The **clock** refers to the system timer
+    - It always counts up, and any time that passes is added to it
+    - It measures everything in *ticks*, an imaginary time unit that is
+      defined relative to itself. Because this is a simulation, it does not
+      increment at a constant rate.
+- A **time slice** or **slice** is a cycle of the CPU, it defines how long the CPU
+  works on a single process
+  - A slice defines the most that the clock can possibly increment per CPU cycle
+  - It defines how often the CPU switches jobs
+- A **process** is a task for the CPU that spans multiple time slices
+  - Running processes are stored in a priority queue, called *running*
+  - Processes that the CPU does not know about yet, the part that makes
+    this program a simulation, are stored in a queue called *future*
+- A **job** refers to the current process being run by the CPU
+  - Always points to a process
+  - A job runs for a single slice or less, depending on the time the process
+    the job refers to has left
+  - Once a job is completed, one of two things will happen
+    1. It is re-added to the priority queue with a lower priority
+    2. If the time left is 0, its data is printed to the console and the
+       process is discarded
+- The **pull frequency** refers to the number of slices that pass before a new
+  process is automatically pulled from the future processes queue
+  - If the CPU runs out of running processes, this will be triggered
+    automatically, and a new process will be pulled from the future
+    queue early
+  - If both the future and running process queues are empty, the program exits
+ */
 
 int main(int argc, char* argv[]) {
     if (argc <= 1)
@@ -124,13 +131,16 @@ Working example:
     15
     2
 
+    0 5000
     5 50
     7 100
     1 100
+    3 124
+    9 330
 
 After each piece of data is input:
-- **priority** is set to **_initialPriority**
-- **timeLeft** is set to **_timeRequired**
+- *priority* is set to *initialPriority*
+- *timeLeft* is set to *timeRequired*
  */
 void buildFutureQueue(ifstream& source, queue<Process>& dest) {
     Process current;

@@ -1,0 +1,234 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Data Structures and Algorithms: Radix Sort</title>
+
+<meta name="description" content="Data Structures and Algorithms Course Notes,
+PLDS210 University of Western Australia">
+<meta name="keywords" content="data structures,algorithms,abstract data types,
+sorting, radix sort">
+</head>
+<body style="-moz-user-select: text;" bgcolor="#ffffff">
+<table bgcolor="#00c0f0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr bgcolor="#00f0f0"><td align="right">
+<font face="helvetica" size="+1"><i>Data Structures and Algorithms</i></font>
+</td></tr>
+
+<tr><td><font face="helvetica" size="+2"><b>7.5 Radix Sorting</b></font>
+</td></tr>
+</tbody></table>
+<p>
+ 
+The bin sorting approach can be generalised in a technique that
+is known as <i>radix sorting</i>.
+</p><p>
+</p><h4>An example</h4>
+
+Assume that we have <b>n</b> integers in the range (0,<b>n</b><sup>2</sup>)
+to be sorted.
+(For a bin sort, <b>m</b> = <b>n</b><sup>2</sup>, and
+we would have an <b>O(n+m)</b> = <b>O(n<sup>2</sup>)</b> algorithm.)
+Sort them in two phases:
+<ol>
+<li> Using <b>n</b> bins, place <b>a<sub>i</sub></b> into bin
+<b>a<sub>i</sub></b> mod <b>n</b>,
+</li><li> Repeat the process using <b>n</b> bins,
+placing <b>a<sub>i</sub></b> into bin
+floor(<b>a<sub>i</sub></b>/<b>n</b>),
+<i>being careful to append to the end of each bin</i>.
+</li></ol>
+This results in a sorted list.
+<p>
+
+As an example, consider the list of integers:
+</p><center><blockquote><pre>36 9 0 25 1 49 64 16 81 4
+</pre></blockquote></center>
+<b>n</b> is 10 and the numbers all lie in (0,99).
+After the first phase, we will have:
+<p>
+</p><center><tt>
+<table border="2">
+<tbody><tr><th>Bin</th><th width="9%">0</th><th width="9%">1</th>
+<th width="9%">2</th><th width="9%">3</th>
+<th width="9%">4</th><th width="9%">5</th>
+<th width="9%">6</th><th width="9%">7</th>
+<th width="9%">8</th><th width="9%">9</th></tr>
+<tr>
+<td>Content</td>
+<td align="center" valign="top"><tt>0</tt></td>
+<td align="center" valign="top"><tt>1<br>81</tt></td><td>-</td><td>-</td>
+<td align="center" valign="top"><tt>64<br>4</tt></td>
+<td align="center" valign="top"><tt>25</tt></td>
+<td align="center" valign="top"><tt>36<br>16</tt></td>
+<td align="center" valign="top">-</td>
+<td align="center" valign="top">-</td>
+<td align="center" valign="top"><tt>9<br>49</tt></td>
+</tr>
+</tbody></table></tt></center>
+<p>
+Note that in this phase, we placed each item in a bin indexed by the
+least significant decimal digit.
+</p><p>
+Repeating the process, will produce:
+</p><p> </p><center><table border="1">
+<tbody><tr><th>Bin</th><th width="9%">0</th><th width="9%">1</th>
+<th width="9%">2</th><th width="9%">3</th>
+<th width="9%">4</th><th width="9%">5</th>
+<th width="9%">6</th><th width="9%">7</th>
+<th width="9%">8</th><th width="9%">9</th></tr>
+<tr>
+<td>Content</td>
+<td align="center" valign="top"><tt>0<br>1<br>4<br>9</tt></td>
+<td align="center" valign="top"><tt>16</tt></td>
+<td align="center" valign="top"><tt>25</tt></td>
+<td align="center" valign="top"><tt>36</tt></td>
+<td align="center" valign="top"><tt>49</tt></td>
+<td align="center" valign="top"><tt>-</tt></td>
+<td align="center" valign="top"><tt>64</tt></td>
+<td align="center" valign="top"><tt>-</tt></td>
+<td align="center" valign="top"><tt>81</tt></td>
+<td align="center" valign="top"><tt>-</tt></td></tr>
+</tbody></table></center>
+<p>
+In this second phase, we used the leading decimal digit to allocate items
+to bins, being careful to add each item to the end of the bin.
+</p><p>
+We can apply this process to numbers of any size expressed to any suitable
+base or <i>radix</i>.
+</p><h4>7.5.1 Generalised Radix Sorting</h4>
+We can further observe that it's not necessary to use the same radix
+in each phase, suppose that the sorting key is a sequence of
+fields, each with bounded ranges,
+<i>eg</i> the key is a date using the structure:
+<font color="green"><pre>typedef struct t_date {
+    int day;
+    int month;
+    int year; 
+} date;
+</pre></font>
+If the ranges for <tt><font color="green">day</font></tt> and
+<tt><font color="green">month</font></tt> are limited in the obvious way, 
+and the range for <tt><font color="green">year</font></tt>
+is suitably constrained,
+<i>eg</i> 1900 &lt; <tt><font color="green">year</font></tt> &lt;= 2000,
+then we can apply the same procedure except that we'll employ a
+different number of bins in each phase.
+In all cases, we'll sort first using the least significant "digit"
+(where "digit" here means a field with a limited range), then
+using the next significant "digit", placing each item after all the items
+already in the bin, and so on.
+<p>
+Assume that the key of the item to be sorted has <b>k</b> fields,
+<b>f<sub>i</sub></b>|<b>i</b>=0..<b>k-1</b>,
+and that each <b>f<sub>i</sub></b> has <b>s<sub>i</sub></b>
+discrete values,
+then a generalised radix sort procedure can be written:
+</p><p>
+</p><center><table border="1" cellpadding="2">
+<tbody><tr><td width="450"><font color="green"><pre>radixsort( A, n ) {
+    for(i=0;i&lt;k;i++) {
+        for(j=0;j&lt;s<sub>i</sub>;j++) bin[j] = EMPTY;
+</pre></font></td>
+<td width="50"><b>O(s<sub>i</sub>)</b></td></tr>
+<tr><td><font color="green"><pre>        for(j=0;j&lt;n;j++) {
+            move A<sub>i</sub> 
+            to the end of bin[A<sub>i</sub>-&gt;f<sub>i</sub>]
+            }</pre></font></td>
+<td><b>O(n)</b></td></tr>
+<tr><td><font color="green"><pre>        for(j=0;j&lt;s<sub>i</sub>;j++) 
+            concatenate bin[j] onto the end of A;
+        }
+}</pre></font></td>
+<td><b>O(s<sub>i</sub>)</b></td>
+</tr>
+</tbody></table>
+<table border="1">
+<tbody><tr>
+<td width="100">Total</td>
+<td width="400">
+<img src="Radix%20Sort_files/radixsort.gif"></td></tr>
+</tbody></table>
+</center>
+<p>
+Now if, for example, the keys are integers in (0,<b>b<sup>k</sup></b>-1),
+for some constant <b>k</b>,
+then the keys can be viewed as <b>k</b>-digit base-<b>b</b> integers.<br>
+Thus, <b>s<sub>i</sub> = b</b> for all <b>i</b> and
+the time complexity becomes
+<b>O(n+kb)</b> or <b>O(n)</b>.
+<i><font color="red">This result depends on <b>k</b> being constant.</font></i>
+</p><p>
+If <b>k</b> is allowed to increase with <b>n</b>,
+then we have a different picture.
+For example,
+it takes
+log<sub><font size="-1">2</font></sub><b>n</b>
+binary digits to represent an integer &lt;<b>n</b>.
+If the key length were allowed to increase with <b>n</b>,
+so that <b>k</b> = log<b>n</b>,
+then we would have:<br>
+<img src="Radix%20Sort_files/rsort1.gif">. 
+</p><p>
+Another way of looking at this is to note that if the range of the
+key is restricted to
+(0,<b>b<sup>k</sup></b>-1),
+then we will be able to use the radixsort approach effectively
+<font color="blue">if we allow duplicate keys when <b>n</b>&gt;<b>b<sup>k</sup></b>.</font>
+However, if we need to have unique keys, 
+then <b>k</b> must increase to at least 
+log<sub><font size="-1">b</font></sub><b>n</b>.
+Thus, as <b>n</b> increases, we need to have log<b>n</b> phases,
+each taking <b>O(n)</b> time,
+and the radix sort is the same as quick sort!
+</p><p>
+</p><h3>Sample code </h3>
+This sample code sorts arrays of integers on various radices:
+the number of bits used for each radix can be set with the
+call to SetRadices. The <tt>Bins</tt> class is used in each 
+phase to collect the items as they are sorted.
+<tt>ConsBins</tt> is called to set up a set of bins:
+each bin must be large enough to accommodate the whole array,
+so RadixSort can be very expensive in its memory usage!
+<ul>
+<li><a href="https://www.cs.auckland.ac.nz/software/AlgAnim/source/RadixSort.h" target="source">RadixSort.h</a>
+</li><li><a href="https://www.cs.auckland.ac.nz/software/AlgAnim/source/RadixSort.c" target="source">RadixSort.c</a>
+</li><li><a href="https://www.cs.auckland.ac.nz/software/AlgAnim/source/Bins.h" target="source">Bins.h</a>
+</li><li><a href="https://www.cs.auckland.ac.nz/software/AlgAnim/source/Bins.c" target="source">Bins.c</a>
+</li></ul>
+
+<p>
+
+</p><p>
+<a name="radix_sort_anim">
+<table bgcolor="#00f0f0" width="100%"> 
+<tbody><tr><td>
+<font color="blue" face="helvetica">
+<b>Radix Sort Animation</b><br>
+This animation was written by Woi Ang.</font></td>
+<td align="center">
+  <table border="0">
+  <tbody><tr><td>
+    <applet code="Radix%20Sort_files/AlgAnimApp.html" height="35" width="200">
+    <param name="filename" value="AlgThread.java">
+    <param name="buttonname" value="Run the Animation">
+    <param name="algname" value="Radix Sort">
+    </applet>
+    </td>
+  </tr>
+</tbody></table>
+</td>
+<td><font face="helvetica">Please email comments to:<br>
+<img src="Radix%20Sort_files/john_email.gif">
+</font></td></tr>
+</tbody></table>
+
+<table bgcolor="#00f0f0" cellpadding="5" cellspacing="4" width="100%">
+<tbody><tr><td width="50%">
+Continue on to <a href="https://www.cs.auckland.ac.nz/software/AlgAnim/search_trees.html">Search Trees</a></td>
+<td>Back to the <a href="https://www.cs.auckland.ac.nz/software/AlgAnim/ds_ToC.html">Table of Contents</a>
+</td></tr></tbody></table>
+<small>
+© <img src="Radix%20Sort_files/john_email.gif">, 1998
+</small>
+
+
+</a></p></body></html>

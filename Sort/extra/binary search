@@ -1,0 +1,53 @@
+//searching and sorting
+
+/*big O notation
+O(n) - the time something is going to take is
+       in direct proportion to the size of the dataset, constant speed for small and large datasets
+O(n^2) is worse, about the same as linear for small datasets, but terrible for large
+O(logn) - log is assuming log_2 - usually works the best for large datasets, although it is slightly slower
+          for small sets.
+*/
+
+//When searching, we will assume there is an array of numbers in order
+
+//3 types of algorithm testing: worst case, best case, average case
+
+/*
+LINEAR search             BINARY search
+worst case: O(n)          O(logn)
+best case: O(1)           O(1)
+best case: O(n)           O(logn)
+*/
+
+//works ONLY if the array is in order
+//this is a binary search
+/*int find(a[], int size, int n2f) { //n2f = numToFind
+    int low = 0;
+    int high = size;
+    int mid = high / 2;
+
+    if (n2f == a[mid])
+        return mid;
+    else if (n2f > a[mid])
+        low = mid + 1;
+    else
+        high = mid - 1;
+
+    while (n2f != a[low] && low != high)
+    {
+        mid = (high + low) / 2;
+        if (n2f == a[mid])
+            return mid;
+        else if (n2f > array[mid])
+            low = mid + 1;
+        else
+            high = mid - 1;
+    }
+    return -1;
+}
+//if this were a linear search, it would work whether or not the data was sorted,
+//but it will be much slower
+
+void sort(int a[], int size) {
+
+}*/

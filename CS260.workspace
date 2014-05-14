@@ -7,5 +7,6 @@
 		<Project filename="Queue/Queue.cbp" />
 		<Project filename="RPN-Calc/RPN-Calc.cbp" />
 		<Project filename="ScratchPad/ScratchPad.cbp" />
+		<Project filename="Sort/Sort.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

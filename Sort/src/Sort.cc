@@ -7,93 +7,123 @@
 #include <chrono>
 #include <algorithm>
 #include <forward_list>
+#include <utility>
 #include <cstdlib>
 #include <cstdint>
 #include <cmath>
 using namespace std;
 
+void generateDataOrdered(int a[], uint32_t size);
+void generateDataReverse(int a[], uint32_t size);
+void generateDataRandom(int a[], uint32_t size);
 namespace sort {
-    bool radix(int data[], uint32_t size);
-    void merge(int data[], uint32_t first, uint32_t last);
-    void quick(int data[], uint32_t size);
+    bool radix(int data[], const uint32_t& size);
+    void merge(int data[], const uint32_t& last, const uint32_t& first = 0);
+    void quick(int data[], const uint32_t& last, const uint32_t& first = 0);
 }
 
 int main() {
-    int x[8] = {3, 5, 1, 2, 4, 0, 10, 3};
-    for (int i = 0; i < 8; i++)
-        cout << x[i] << endl;
-    sort::radix(x, 8);
-    cout << endl;
-    for (int i = 0; i < 8; i++)
-        cout << x[i] << endl;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//DATA GENERATORS
+void generateDataOrdered(int a[], uint32_t size) {
+    for (int i = 0; i < size; i++)
+        a[i] = i;
+}
+
+void generateDataReverse(int a[], uint32_t size) {
+    for (int i = size - 1; i >= 0; i--)
+        a[i] = i;
+}
+
+void generateDataRandom(int a[], uint32_t size) {
+    srand(42);
+    for (int i = 0; i < size; i++)
+        a[i] = rand();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//SORTING ALGORITHMS
 
 /**@brief Implements a radix sort, only works for positive integers
    @param data The array to sort
+   @param size The size of the array
  */
-bool sort::radix(int data[], uint32_t size) {
-    //make sure there are no negative values and find the largest value
-    int places = data[0]; //will store the number of digits
-    for (uint32_t i = 0; i < size; i++)
+bool sort::radix(int data[], const uint32_t& size) {
+    if (size == 1)
+        return true;
+    else if (size == 2)
     {
-        if (data[i] < 0)
-            return false;
-        if (data[i] > places)
-            places = data[i];
+        if (data[0] > data[1])
+            swap(data[0], data[1]);
+        return true;
     }
-    places = log10(places) + 1; //the number of decimal places
-
-    //create an array of linked lists to store the values of each place in
-    //[0] stores data that is in the 1's place
-    //[1] stores data that is in the 10's place...
-    forward_list<int>* bucket = new forward_list<int>[places];
-
-    //build lists in order
-    for (uint32_t d = 0; d < size; d++) //data iteration
+    else
     {
-        uint32_t p = log10(data[d]); //place to use
-        //insert data into list
-        //data is lowest in place
-        if (bucket[p].empty() || data[d] < bucket[p].front())
-            bucket[p].push_front(data[d]);
-        else
+        //make sure there are no negative values and find the largest value
+        uint32_t places = data[0]; //will store the number of digits
+        for (uint32_t i = 0; i < size; i++)
         {
-            //list iterators
-            forward_list<int>::iterator l_lead = bucket[p].begin();
-            forward_list<int>::iterator l_trail;
-            while (l_lead != bucket[p].end() && *l_lead < data[d])
+            if (data[i] < 0)
+                return false;
+            if (data[i] > places)
+                places = data[i];
+        }
+        places = log10(places) + 1; //the number of decimal places
+
+        //create an array of linked lists to store the values of each place in
+        //[0] stores data that is in the 1's place
+        //[1] stores data that is in the 10's place...
+        forward_list<int>* bucket = new forward_list<int>[places];
+
+        //build lists in order
+        for (uint32_t d = 0; d < size; d++) //data iteration
+        {
+            uint32_t p = log10(data[d]); //place to use
+            //insert data into list
+            //data is lowest in place
+            if (bucket[p].empty() || data[d] < bucket[p].front())
+                bucket[p].push_front(data[d]);
+            else
             {
-                l_trail = l_lead;
-                l_lead++;
-            }
-            bucket[p].insert_after(l_trail, data[d]);
-        } //else
-    } //data
+                //list iterators
+                forward_list<int>::iterator l_lead = bucket[p].begin();
+                forward_list<int>::iterator l_trail;
+                while (l_lead != bucket[p].end() && *l_lead < data[d])
+                {
+                    l_trail = l_lead;
+                    l_lead++;
+                }
+                bucket[p].insert_after(l_trail, data[d]);
+            } //else
+        } //data
 
-    //move sorted data from the bucket array to the data array
-    uint32_t d = 0; //data iteration
-    //d does not need to be checked, we know that the exact number
-    //of list elements matches the size of d
-    for (uint32_t p = 0; p < places; p++) //place iteration
-    {
-        while (!bucket[p].empty()) //empty list
+        //move sorted data from the bucket array to the data array
+        uint32_t d = 0; //data iteration
+        //d does not need to be checked, we know that the exact number
+        //of list elements matches the size of d
+        for (uint32_t p = 0; p < places; p++) //place iteration
         {
-            data[d++] = bucket[p].front();
-            bucket[p].pop_front();
-        } //empty
-    } //place
+            while (!bucket[p].empty()) //empty list
+            {
+                data[d++] = bucket[p].front();
+                bucket[p].pop_front();
+            } //empty
+        } //place
 
-    delete [] bucket;
-    return true;
+        delete [] bucket;
+        return true;
+    } //else
 }
 
 /**@brief Implements a complete recursive merge sort (low values on top),
           entirely self-contained.
    @param data The array to sort
-   @param first The starting position in the array
    @param last The ending position in the array (1 + index)
+   @param first The starting position in the array
  */
-void sort::merge(int data[], uint32_t first, uint32_t last) {
+void sort::merge(int data[], const uint32_t& last, const uint32_t& first) {
     const uint32_t SIZE = last - first;
     const uint32_t mid = (last - first) / 2;
 
@@ -124,8 +154,8 @@ void sort::merge(int data[], uint32_t first, uint32_t last) {
         }
 
         ///////////////////////////////////////
-        sort::merge(left, 0, mid);
-        sort::merge(right, 0, SIZE_right);
+        sort::merge(left, mid);
+        sort::merge(right, SIZE_right);
 
         ///////////////////////////////////////
         //merge
@@ -156,6 +186,70 @@ void sort::merge(int data[], uint32_t first, uint32_t last) {
     }
 }
 
-void sort::quick(int data[], uint32_t size) {
+/**@brief Implements quick sort
+   @param data The array to sort
+   @param last The end of the data range within the array (size in most cases)
+   @param first The beginning of the data range, primarily used in recursion
+ */
+void sort::quick(int data[], const uint32_t& last, const uint32_t& first) {
+    uint32_t size = last - first;
+    if (size <= 1)
+        return;
+    else if (size == 2)
+    {
+        if (data[0] > data[1])
+            swap(data[0], data[1]);
+    }
+    else
+    {
+        uint32_t pivot = size / 2;
 
+        //putting data in linked lists should be more
+        //time-efficient than having to constantly reorganize an array
+        //theoretically, it should be possible to organize the array
+        //without a bunch of extra copying
+        //note that I'm not sorting the data within the lists like I did
+        //with radix sort
+
+        forward_list<int> bin[3];
+        //bin[0]: data < pivot
+        //bin[1]: data == pivot
+        //bin[2]: data > pivot
+
+        //sort data
+        for (uint32_t i = first; i < last; i++)
+        {
+            if (data[i] < data[pivot]) //less
+                bin[0].push_front(data[i]);
+            else if (data[i] > data[pivot]) //greater
+                bin[2].push_front(data[i]);
+            else //equal
+                bin[1].push_front(data[i]);
+        }
+
+        uint32_t pivotRange[2];
+        //the starting and ending indices of the data == pivot
+
+        //put sorted data in array
+        uint32_t index = first;
+        for (uint8_t b = 0; b < 3; b++) //cycle thru bins
+        {
+            if (b == 1)
+                pivotRange[0] = index;
+
+            while (!bin[b].empty()) //copy list contents to array
+            {
+                data[index] = bin[b].front();
+                bin[b].pop_front();
+                index++;
+            }
+
+            if (b == 1)
+                pivotRange[1] = index;
+        }
+
+        //recursion recursion recursion recursion....
+        sort::quick(data, pivotRange[0], first);
+        sort::quick(data, last, pivotRange[1]);
+    } //else
 }

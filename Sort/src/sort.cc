@@ -2,46 +2,8 @@
  * @author Caleb Reister <calebreister@gmail.com>
  */
 
-#include <fstream>
-#include <iostream>
-#include <chrono>
-#include <algorithm>
-#include <forward_list>
-#include <utility>
-#include <cstdlib>
-#include <cstdint>
-#include <cmath>
+#include "sort.hh"
 using namespace std;
-
-void generateDataOrdered(int a[], uint32_t size);
-void generateDataReverse(int a[], uint32_t size);
-void generateDataRandom(int a[], uint32_t size);
-namespace sort {
-    bool radix(int data[], const uint32_t& size);
-    void merge(int data[], const uint32_t& last, const uint32_t& first = 0);
-    void quick(int data[], const uint32_t& last, const uint32_t& first = 0);
-}
-
-int main() {
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//DATA GENERATORS
-void generateDataOrdered(int a[], uint32_t size) {
-    for (int i = 0; i < size; i++)
-        a[i] = i;
-}
-
-void generateDataReverse(int a[], uint32_t size) {
-    for (int i = size - 1; i >= 0; i--)
-        a[i] = i;
-}
-
-void generateDataRandom(int a[], uint32_t size) {
-    srand(42);
-    for (int i = 0; i < size; i++)
-        a[i] = rand();
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //SORTING ALGORITHMS

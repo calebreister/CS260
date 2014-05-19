@@ -23,7 +23,10 @@
 		</Compiler>
 		<Unit filename="extra/CS260A5-Sorting.pdf" />
 		<Unit filename="extra/binary search" />
-		<Unit filename="src/Sort.cc" />
+		<Unit filename="src/main.cc" />
+		<Unit filename="src/sort.cc" />
+		<Unit filename="src/sort.hh" />
+		<Unit filename="src/timePatch.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

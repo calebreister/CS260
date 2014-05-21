@@ -5,7 +5,7 @@
    @brief This is a C-style header that deals with Microsoft's standard library
           implementation incorrectly handling the <ctime> clock() function. This
           code should work equally well in both C and C++.
- */
+*/
 
 #ifdef _WIN32 // Windows
 #include <Windows.h>

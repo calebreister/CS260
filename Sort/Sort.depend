@@ -10,17 +10,17 @@
 	<cstdint>
 	<cmath>
 
-1400632855 source:/home/caleb/Dropbox/School/CS260/Sort/src/sort.cc
+1400684605 source:/home/caleb/Dropbox/School/CS260/Sort/src/sort.cc
 	"sort.hh"
 
-1400608133 /home/caleb/Dropbox/School/CS260/Sort/src/sort.hh
+1400684409 /home/caleb/Dropbox/School/CS260/Sort/src/sort.hh
 	<algorithm>
 	<forward_list>
 	<utility>
 	<cstdint>
 	<cmath>
 
-1400635129 source:/home/caleb/Dropbox/School/CS260/Sort/src/main.cc
+1400684335 source:/home/caleb/Dropbox/School/CS260/Sort/src/main.cc
 	<iostream>
 	<fstream>
 	<cstdlib>

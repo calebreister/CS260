@@ -1,7 +1,7 @@
 ///@file
 ///@author Caleb Reister <calebreister@gmail.com>
 
-#define CHECK_SORT
+//#define CHECK_SORT
 
 #include <iostream>
 #include <fstream>
@@ -18,8 +18,10 @@ enum DataOrder {ORDERED, REVERSE, RANDOM};
 double timeSort(SortMode mode, DataOrder order, uint32_t size);
 
 int main() {
-    cout << timeSort(MERGE, RANDOM, 1000);
+    cout << timeSort(QUICK, RANDOM, 100000);
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 double timeSort(SortMode mode, DataOrder order, uint32_t size) {

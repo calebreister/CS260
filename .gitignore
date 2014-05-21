@@ -1,3 +1,4 @@
+/Sort/ValgrindOut.xml
 /GitLog.txt
 */doc
 *.zip
@@ -7,7 +8,7 @@
 html
 bin
 obj
-*grind*.out
+*grind*
 
 #Testing program
 ScratchPad

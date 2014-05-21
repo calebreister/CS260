@@ -26,6 +26,9 @@
 		<Unit filename="src/main.cc" />
 		<Unit filename="src/sort.cc" />
 		<Unit filename="src/sort.hh" />
+		<Unit filename="src/timePatch.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/timePatch.h" />
 		<Extensions>
 			<code_completion />

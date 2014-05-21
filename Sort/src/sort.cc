@@ -27,8 +27,9 @@ using namespace std;
            append rest(right) to result
        return result
 */
-void mergeData(long result[], long a[], uint32_t aSize, long b[], uint32_t bSize) {
-    uint32_t ri = 0, //result index
+void mergeData(long result[], long a[], index aSize,
+               long b[], index bSize) {
+    index ri = 0, //result index
              ai = 0, //a index
              bi = 0; //b index
 
@@ -59,8 +60,58 @@ void mergeData(long result[], long a[], uint32_t aSize, long b[], uint32_t bSize
 /**@brief Implements a radix sort, only works for positive integers
    @param data The array to sort
    @param size The size of the array
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.py}
+#python2.6 <
+from math import log
+
+def getDigit(num, base, digit_num):
+    # pulls the selected digit
+    return (num // base ** digit_num) % base
+
+def makeBlanks(size):
+    # create a list of empty lists to hold the split by digit
+    return [ [] for i in range(size) ]
+
+def split(a_list, base, digit_num):
+    buckets = makeBlanks(base)
+    for num in a_list:
+        # append the number to the list selected by the digit
+        buckets[getDigit(num, base, digit_num)].append(num)
+    return buckets
+
+# concatenate the lists back in order for the next step
+def merge(a_list):
+    new_list = []
+    for sublist in a_list:
+       new_list.extend(sublist)
+    return new_list
+
+def maxAbs(a_list):
+    # largest abs value element of a list
+    return max(abs(num) for num in a_list)
+
+def split_by_sign(a_list):
+    # splits values by sign - negative values go to the first bucket,
+    # non-negative ones into the second
+    buckets = [[], []]
+    for num in a_list:
+        if num < 0:
+            buckets[0].append(num)
+        else:
+            buckets[1].append(num)
+    return buckets
+
+def radixSort(a_list, base):
+    # there are as many passes as there are digits in the longest number
+    passes = int(round(log(maxAbs(a_list), base)) + 1)
+    new_list = list(a_list)
+    for digit_num in range(passes):
+        new_list = merge(split(new_list, base, digit_num))
+    return merge(split_by_sign(new_list))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-bool sort::radix(long data[], uint32_t size) {
+bool sort::radix(long data[], index size) {
     if (size == 1)
         return true;
     else if (size == 2)
@@ -71,8 +122,8 @@ bool sort::radix(long data[], uint32_t size) {
     }
 
     //make sure there are no negative values and find the largest value
-    uint32_t places = data[0]; //will store the number of digits
-    for (uint32_t i = 0; i < size; i++)
+    index places = data[0]; //will store the number of digits
+    for (index i = 0; i < size; i++)
     {
         if (data[i] < 0)
             return false;
@@ -87,9 +138,9 @@ bool sort::radix(long data[], uint32_t size) {
     forward_list<int>* bucket = new forward_list<int>[places];
 
     //build lists in order
-    for (uint32_t d = 0; d < size; d++) //data iteration
+    for (index d = 0; d < size; d++) //data iteration
     {
-        uint32_t p = log10(data[d]); //place to use
+        index p = log10(data[d]); //place to use
         //insert data into list
         //data is lowest in place
         if (bucket[p].empty() || data[d] < bucket[p].front())
@@ -109,10 +160,10 @@ bool sort::radix(long data[], uint32_t size) {
     } //data
 
     //move sorted data from the bucket array to the data array
-    uint32_t d = 0; //data iteration
+    index d = 0; //data iteration
     //d does not need to be checked, we know that the exact number
     //of list elements matches the size of d
-    for (uint32_t p = 0; p < places; p++) //place iteration
+    for (index p = 0; p < places; p++) //place iteration
     {
         while (!bucket[p].empty()) //empty list
         {
@@ -149,9 +200,9 @@ bool sort::radix(long data[], uint32_t size) {
            result = merge(left, right)
            return result
 */
-void sort::merge(long data[], uint32_t last, uint32_t first) {
-    const uint32_t SIZE = last - first;
-    const uint32_t MID = SIZE / 2;
+void sort::merge(long data[], index last, index first) {
+    const index SIZE = last - first;
+    const index MID = SIZE / 2;
 
     if (SIZE <= 1)
         return;
@@ -164,14 +215,14 @@ void sort::merge(long data[], uint32_t last, uint32_t first) {
 
     //create sub-arrays
     long* left = new long[MID];
-    const uint32_t right_SIZE = SIZE - MID;
+    const index right_SIZE = SIZE - MID;
     long* right = new long[right_SIZE];
 
     //fill left array
-    for (uint32_t l = 0; l < MID; l++)
+    for (index l = 0; l < MID; l++)
         left[l] = data[l];
 
-    for (uint32_t r = 0; r < right_SIZE; r++)
+    for (index r = 0; r < right_SIZE; r++)
         right[r] = data[r + MID];
 
     ///////////////////////////////////////
@@ -180,9 +231,9 @@ void sort::merge(long data[], uint32_t last, uint32_t first) {
     if (left[MID - 1] <= right[0]) // end of left <= beginning of right
     {
         //append right to left
-        for (uint32_t l = 0; l < MID; l++)
+        for (index l = 0; l < MID; l++)
             data[l] = left[l];
-        for (uint32_t r = 0; r < right_SIZE; r++)
+        for (index r = 0; r < right_SIZE; r++)
             data[r + MID] = right[r];
         delete [] left;
         delete [] right;
@@ -200,25 +251,33 @@ void sort::merge(long data[], uint32_t last, uint32_t first) {
    @param last The end of the data range within the array (size in most cases)
    @param first The beginning of the data range, primarily used in recursion
 
-   function quicksort(array)
-    if length(array) > 1
-        pivot := select any element of array
-        left := first index of array
-        right := last index of array
-        while left ≤ right
-            while array[left] < pivot
-                left := left + 1
-            while array[right] > pivot
-                right := right - 1
-            if left ≤ right
-                swap array[left] with array[right]
-                left := left + 1
-                right := right - 1
-        quicksort(array from first index to right)
-        quicksort(array from left to last index)
+**Based off of the following code...**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+ void quick_sort (int *a, int n) {
+    if (n < 2)
+        return;
+    int p = a[n / 2];
+    int *l = a;
+    int *r = a + n - 1;
+    while (l <= r) {
+        if (*l < p) {
+            l++;
+            continue;
+        }
+        if (*r > p) {
+            r--;
+            continue;
+        }
+        int t = *l;
+        *l++ = *r;
+        *r-- = t;
+    }
+    quick_sort(a, r - a + 1);
+    quick_sort(l, a + n - l);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+}
 */
-void sort::quick(long data[], uint32_t last, uint32_t first) {
-    uint32_t size = last - first;
+void sort::quick(long data[], index size) {
     if (size <= 1)
         return;
     else if (size == 2)
@@ -228,53 +287,28 @@ void sort::quick(long data[], uint32_t last, uint32_t first) {
         return;
     }
 
-    uint32_t pivot = size / 2;
-
-    //putting data in linked lists should be more
-    //time-efficient than having to constantly reorganize an array
-    //theoretically, it should be possible to organize the array
-    //without a bunch of extra copying
-    //note that I'm not sorting the data within the lists like I did
-    //with radix sort
-
-    forward_list<int> bin[3];
-    //bin[0]: data < pivot
-    //bin[1]: data == pivot
-    //bin[2]: data > pivot
-
-    //sort data
-    for (uint32_t i = first; i < last; i++)
+    long pivot = data[size / 2];
+    long *left = data;
+    long *right = data + size - 1;
+    while (left <= right)
     {
-        if (data[i] < data[pivot]) //less
-            bin[0].push_front(data[i]);
-        else if (data[i] > data[pivot]) //greater
-            bin[2].push_front(data[i]);
-        else //equal
-            bin[1].push_front(data[i]);
-    }
-
-    uint32_t pivotRange[2];
-    //the starting and ending indices of the data == pivot
-
-    //put sorted data in array
-    uint32_t index = first;
-    for (uint8_t b = 0; b < 3; b++) //cycle thru bins
-    {
-        if (b == 1)
-            pivotRange[0] = index;
-
-        while (!bin[b].empty()) //copy list contents to array
+        //the loop condition must be checked every time either left or right
+        //is changed
+        if (*left < pivot)
         {
-            data[index] = bin[b].front();
-            bin[b].pop_front();
-            index++;
+            left++;
+            continue;
+        }
+        if (*right > pivot)
+        {
+            right--;
+            continue;
         }
 
-        if (b == 1)
-            pivotRange[1] = index;
+        long temp = *left;
+        *left++ = *right;
+        *right-- = temp;
     }
-
-    //recursion recursion recursion recursion....
-    sort::quick(data, pivotRange[0], first);
-    sort::quick(data, last, pivotRange[1]);
+    sort::quick(data, right - data + 1);
+    sort::quick(left, data + size - left);
 }

@@ -10,7 +10,7 @@
 	<cstdint>
 	<cmath>
 
-1400631843 source:/home/caleb/Dropbox/School/CS260/Sort/src/sort.cc
+1400632855 source:/home/caleb/Dropbox/School/CS260/Sort/src/sort.cc
 	"sort.hh"
 
 1400608133 /home/caleb/Dropbox/School/CS260/Sort/src/sort.hh
@@ -20,12 +20,20 @@
 	<cstdint>
 	<cmath>
 
-1400631545 source:/home/caleb/Dropbox/School/CS260/Sort/src/main.cc
+1400635129 source:/home/caleb/Dropbox/School/CS260/Sort/src/main.cc
 	<iostream>
 	<fstream>
 	<cstdlib>
 	<cstdint>
 	<cassert>
 	"sort.hh"
-	"time.h"
+	"timePatch.h"
+
+1400635297 /home/caleb/Dropbox/School/CS260/Sort/src/timePatch.h
+
+1400635275 source:/home/caleb/Dropbox/School/CS260/Sort/src/timePatch.c
+	"timePatch.h"
+	<Windows.h>
+	<sys/time.h>
+	<time.h>
 

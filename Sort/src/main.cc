@@ -1,7 +1,7 @@
 ///@file
 ///@author Caleb Reister <calebreister@gmail.com>
 
-#define CHECK_SORT
+//#define CHECK_SORT
 
 #include <iostream>
 #include <fstream>
@@ -12,6 +12,8 @@
 #include "timePatch.h"
 using namespace std;
 
+const index maxSize = 1000000;
+
 enum SortMode {QUICK, MERGE, HEAP};
 enum DataOrder {ORDERED, REVERSE, RANDOM};
 
@@ -19,13 +21,49 @@ double timeSort(SortMode mode, DataOrder order, uint32_t size);
 
 int main(int argc, char* argv[]) {
     ofstream out;
-    out.open(argv[0]);
+    out.open("output.csv");
 
-    out << "ALGORITHM,ORDERED,REVERSE,RANDOM\n";
-    for (index size = 0; size <= 10000000; size *= 10)
-    {
-        out << "";
-    }
+    out << "QUICK,";
+    for (index i = 100; i <= maxSize; i *= 10)
+        out << i << ",";
+    out << endl << "ORDERED,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(QUICK, ORDERED, size) << ",";
+    out << endl << "REVERSE,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(QUICK, REVERSE, size) << ",";
+    out << endl << "RANDOM,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(QUICK, ORDERED, size) << ",";
+    out << endl << endl;
+
+        out << "MERGE,";
+    for (index i = 100; i <= maxSize; i *= 10)
+        out << i << ",";
+    out << endl << "ORDERED,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(MERGE, ORDERED, size) << ",";
+    out << endl << "REVERSE,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(MERGE, REVERSE, size) << ",";
+    out << endl << "RANDOM,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(MERGE, ORDERED, size) << ",";
+    out << endl << endl;
+
+        out << "HEAP,";
+    for (index i = 100; i <= maxSize; i *= 10)
+        out << i << ",";
+    out << endl << "ORDERED,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(HEAP, ORDERED, size) << ",";
+    out << endl << "REVERSE,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(HEAP, REVERSE, size) << ",";
+    out << endl << "RANDOM,";
+    for (index size = 100; size <= maxSize; size *= 10)
+        out << timeSort(HEAP, ORDERED, size) << ",";
+    out << endl << endl;
 
     out.close();
 }

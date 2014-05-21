@@ -1,7 +1,7 @@
 ///@file
 ///@author Caleb Reister <calebreister@gmail.com>
 
-//#define CHECK_SORT
+#define CHECK_SORT
 
 #include <iostream>
 #include <fstream>
@@ -12,16 +12,23 @@
 #include "timePatch.h"
 using namespace std;
 
-enum SortMode {QUICK, MERGE, RADIX};
+enum SortMode {QUICK, MERGE, HEAP};
 enum DataOrder {ORDERED, REVERSE, RANDOM};
 
 double timeSort(SortMode mode, DataOrder order, uint32_t size);
 
-int main() {
-    cout << timeSort(QUICK, RANDOM, 100000);
+int main(int argc, char* argv[]) {
+    ofstream out;
+    out.open(argv[0]);
+
+    out << "ALGORITHM,ORDERED,REVERSE,RANDOM\n";
+    for (index size = 0; size <= 10000000; size *= 10)
+    {
+        out << "";
+    }
+
+    out.close();
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 double timeSort(SortMode mode, DataOrder order, uint32_t size) {
@@ -56,8 +63,8 @@ double timeSort(SortMode mode, DataOrder order, uint32_t size) {
     case MERGE:
         sort::merge(data, size);
         break;
-    case RADIX:
-        sort::radix(data, size);
+    case HEAP:
+        sort::heap(data, size);
         break;
     }
     timeTaken = get_cpu_time() - startTime;

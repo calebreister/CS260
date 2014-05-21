@@ -27,154 +27,53 @@ using namespace std;
            append rest(right) to result
        return result
 */
-void mergeData(long result[], long a[], index aSize,
+void mergeData(long data[], long a[], index aSize,
                long b[], index bSize) {
-    index ri = 0, //result index
+    index di = 0, //data index
              ai = 0, //a index
              bi = 0; //b index
 
     while (ai < aSize && bi < bSize)
     {
         if (a[ai] <= b[bi])
-            result[ri++] = a[ai++];
+            data[di++] = a[ai++];
         else
-            result[ri++] = b[bi++];
+            data[di++] = b[bi++];
     }
 
     if (ai < aSize)
     {
         while (ai < aSize)
-            result[ri++] = a[ai++];
+            data[di++] = a[ai++];
     }
 
     if (bi < bSize)
     {
         while (bi < bSize)
-            result[ri++] = b[bi++];
+            data[di++] = b[bi++];
+    }
+}
+
+void siftDown(long data[], index start, index end) {
+    index root = start;
+    index child;
+
+    while (root * 2 + 1 < end)
+    {
+        child = 2 * root + 1;
+        if ((child + 1 < end) && (data[child] < data[child + 1]))
+            child++;
+        if (data[root] < data[child])
+        {
+            swap(data[child], data[root]);
+            root = child;
+        }
+        else return;
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //SORTING ALGORITHMS
-
-/**@brief Implements a radix sort, only works for positive integers
-   @param data The array to sort
-   @param size The size of the array
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.py}
-#python2.6 <
-from math import log
-
-def getDigit(num, base, digit_num):
-    # pulls the selected digit
-    return (num // base ** digit_num) % base
-
-def makeBlanks(size):
-    # create a list of empty lists to hold the split by digit
-    return [ [] for i in range(size) ]
-
-def split(a_list, base, digit_num):
-    buckets = makeBlanks(base)
-    for num in a_list:
-        # append the number to the list selected by the digit
-        buckets[getDigit(num, base, digit_num)].append(num)
-    return buckets
-
-# concatenate the lists back in order for the next step
-def merge(a_list):
-    new_list = []
-    for sublist in a_list:
-       new_list.extend(sublist)
-    return new_list
-
-def maxAbs(a_list):
-    # largest abs value element of a list
-    return max(abs(num) for num in a_list)
-
-def split_by_sign(a_list):
-    # splits values by sign - negative values go to the first bucket,
-    # non-negative ones into the second
-    buckets = [[], []]
-    for num in a_list:
-        if num < 0:
-            buckets[0].append(num)
-        else:
-            buckets[1].append(num)
-    return buckets
-
-def radixSort(a_list, base):
-    # there are as many passes as there are digits in the longest number
-    passes = int(round(log(maxAbs(a_list), base)) + 1)
-    new_list = list(a_list)
-    for digit_num in range(passes):
-        new_list = merge(split(new_list, base, digit_num))
-    return merge(split_by_sign(new_list))
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-bool sort::radix(long data[], index size) {
-    if (size == 1)
-        return true;
-    else if (size == 2)
-    {
-        if (data[0] > data[1])
-            swap(data[0], data[1]);
-        return true;
-    }
-
-    //make sure there are no negative values and find the largest value
-    index places = data[0]; //will store the number of digits
-    for (index i = 0; i < size; i++)
-    {
-        if (data[i] < 0)
-            return false;
-        if (data[i] > places)
-            places = data[i];
-    }
-    places = log10(places) + 1; //the number of decimal places
-
-    //create an array of linked lists to store the values of each place in
-    //[0] stores data that is in the 1's place
-    //[1] stores data that is in the 10's place...
-    forward_list<int>* bucket = new forward_list<int>[places];
-
-    //build lists in order
-    for (index d = 0; d < size; d++) //data iteration
-    {
-        index p = log10(data[d]); //place to use
-        //insert data into list
-        //data is lowest in place
-        if (bucket[p].empty() || data[d] < bucket[p].front())
-            bucket[p].push_front(data[d]);
-        else
-        {
-            //list iterators
-            forward_list<int>::iterator l_lead = bucket[p].begin();
-            forward_list<int>::iterator l_trail;
-            while (l_lead != bucket[p].end() && *l_lead < data[d])
-            {
-                l_trail = l_lead;
-                l_lead++;
-            }
-            bucket[p].insert_after(l_trail, data[d]);
-        } //else
-    } //data
-
-    //move sorted data from the bucket array to the data array
-    index d = 0; //data iteration
-    //d does not need to be checked, we know that the exact number
-    //of list elements matches the size of d
-    for (index p = 0; p < places; p++) //place iteration
-    {
-        while (!bucket[p].empty()) //empty list
-        {
-            data[d++] = bucket[p].front();
-            bucket[p].pop_front();
-        } //empty
-    } //place
-
-    delete [] bucket;
-    return true;
-}
 
 /**@brief Implements a complete recursive merge sort (low values on top),
           entirely self-contained.
@@ -311,4 +210,18 @@ void sort::quick(long data[], index size) {
     }
     sort::quick(data, right - data + 1);
     sort::quick(left, data + size - left);
+}
+
+/**
+*/
+void sort::heap(long data[], index size) {
+    //heapify the data
+    for (int64_t start = (size - 2) / 2; start >= 0; start--)
+        siftDown(data, start, size);
+
+    for (int64_t end = size - 1; end > 0; end--)
+    {
+        swap(data[end], data[0]);
+        siftDown(data, 0, end);
+    }
 }

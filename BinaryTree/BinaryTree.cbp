@@ -2,18 +2,17 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Sort" />
+		<Option title="BinaryTree" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/Sort" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/BinaryTree" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="src" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -21,27 +20,11 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="src/main.cc" />
-		<Unit filename="src/sort.cc" />
-		<Unit filename="src/sort.hh" />
-		<Unit filename="src/timePatch.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="src/timePatch.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
 			<lib_finder disable_auto="1" />
-			<DoxyBlocks>
-				<comment_style block="0" line="2" />
-				<doxyfile_project />
-				<doxyfile_build extract_all="1" />
-				<doxyfile_warnings />
-				<doxyfile_output />
-				<doxyfile_dot class_diagrams="1" have_dot="1" />
-				<general use_at_in_tags="1" />
-			</DoxyBlocks>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

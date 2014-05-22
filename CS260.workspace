@@ -8,5 +8,6 @@
 		<Project filename="RPN-Calc/RPN-Calc.cbp" />
 		<Project filename="ScratchPad/ScratchPad.cbp" />
 		<Project filename="Sort/Sort.cbp" />
+		<Project filename="BinaryTree/BinaryTree.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

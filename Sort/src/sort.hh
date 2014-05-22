@@ -4,14 +4,12 @@
 ///@file
 ///@author Caleb Reister <calebreister@gmail.com>
 
-#include <algorithm>
-#include <forward_list>
 #include <utility>
 #include <cstdint>
-#include <cmath>
 
 typedef uint32_t index;
 
+///@brief A container for sorting algorithm functions.
 namespace sort {
     void merge(long data[], index last, index first = 0);
     void quick(long data[], index size);

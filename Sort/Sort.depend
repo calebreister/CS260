@@ -13,23 +13,21 @@
 1400698186 source:/home/caleb/Dropbox/School/CS260/Sort/src/sort.cc
 	"sort.hh"
 
-1400698053 /home/caleb/Dropbox/School/CS260/Sort/src/sort.hh
-	<algorithm>
-	<forward_list>
+1400719599 /home/caleb/Dropbox/School/CS260/Sort/src/sort.hh
 	<utility>
 	<cstdint>
-	<cmath>
 
-1400699427 source:/home/caleb/Dropbox/School/CS260/Sort/src/main.cc
+1400730011 source:/home/caleb/Dropbox/School/CS260/Sort/src/main.cc
 	<iostream>
 	<fstream>
 	<cstdlib>
 	<cstdint>
 	<cassert>
+	<string>
 	"sort.hh"
 	"timePatch.h"
 
-1400635297 /home/caleb/Dropbox/School/CS260/Sort/src/timePatch.h
+1400714893 /home/caleb/Dropbox/School/CS260/Sort/src/timePatch.h
 
 1400635275 source:/home/caleb/Dropbox/School/CS260/Sort/src/timePatch.c
 	"timePatch.h"

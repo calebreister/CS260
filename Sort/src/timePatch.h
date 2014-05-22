@@ -8,7 +8,7 @@
            time-and-wall-clock-time-on-both-linux-windows
 */
 
-#ifdef __cplusplus //only add if being compiled under c++
+#ifdef __cplusplus //only add if being compiled under C++
 extern "C" {
 #endif
 

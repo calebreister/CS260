@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1401166584 source:/home/caleb/Dropbox/School/CS260/BinaryTree/src/BinTree.hh
+	<ios>
+	<cstdint>
+	<cstddef>
+	<cstdarg>
+

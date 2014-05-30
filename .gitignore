@@ -1,6 +1,6 @@
-/Sort/ValgrindOut.xml
+ValgrindOut.xml
 /GitLog.txt
-*/doc
+doc
 *.zip
 *.~lock.*
 *.lock
@@ -9,6 +9,10 @@ html
 bin
 obj
 *grind*
+*~*
+*~
+~*
+debug/
 
 #Testing program
 ScratchPad

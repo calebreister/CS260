@@ -23,7 +23,8 @@ private:
     Node* root;
     uint32_t nodeCount;
     void delNode(Node* n);
-    const std::pair<bool, uint32_t>
+    bool remove(Node* n2d);
+    const std::pair<Node*, uint32_t>
         search(const int& data, Node* n, uint32_t level) const;
     static void inOrder(void (*func)(const int&, uint32_t),
                         Node* n, uint32_t level);
@@ -75,6 +76,113 @@ BinTree::~BinTree() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+//PUBLIC
+
+///@brief Return the number of nodes in the tree
+uint32_t BinTree::count() const {
+    return nodeCount;
+}
+
+void BinTree::add(const int& data) {
+    Node* nn = new Node;
+    nn->data = data;
+
+    if (root == NULL)
+        root = nn;
+    else
+    {
+        Node* current = root;
+        Node* parent;
+
+          //find the parent of nn
+        while (current != NULL)
+        {
+            parent = current;
+            if (nn->data < current->data)
+                current = current->left;
+            else if (nn->data > current->data)
+                current = current->right;
+            else
+            {
+                delete nn;
+                return;
+            }
+        }
+
+          //adjust parent pointers
+        if (nn->data < parent->data)
+            parent->left = nn;
+        else
+            parent->right = nn;
+    }
+    nodeCount++;
+}
+
+const bool BinTree::remove(const int& data) {
+      //find the node to delete and delete it
+    return remove(search(data, root, 0).first);
+}
+
+/**@brief performs a simple binary search
+   @param data the data to search for
+   @return an std:: pair<bool, uint32_t> of whether the data exists and the
+           level that the data is on
+
+If the data was not found, the first value is false. Disregard the level.\n
+The level index starts at 0
+*/
+const std::pair<bool, uint32_t> BinTree::search(const int& data) const {
+    const std::pair<Node*, uint32_t> result =  search(data, root, 0);
+    if (result.first == NULL)
+        return std::make_pair(false, 0);
+    else
+        return std::make_pair(true, result.second);
+}
+
+void BinTree::traverse(Traverse order, void (*func)(const int&, uint32_t)) const {
+    switch (order) {
+    case IN_ORDER:
+        inOrder(func, root, 0);
+        break;
+    case PRE_ORDER:
+        preOrder(func, root, 0);
+        break;
+    case POST_ORDER:
+        postOrder(func, root, 0);
+        break;
+    }
+}
+
+void BinTree::erase() {
+    delNode(root);
+    root = NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//COPY
+
+BinTree::BinTree(const BinTree& source) {
+    root = NULL;
+    nodeCount = 0;
+    source.preOrder(source.root, *this);
+}
+
+void BinTree::operator=(const BinTree& right) {
+    this->erase();  //erase the tree if it exists
+    right.preOrder(right.root, *this);
+}
+
+void BinTree::operator+=(const BinTree& right) {
+    right.preOrder(right.root, *this);
+}
+
+BinTree operator+(const BinTree& left, const BinTree& right) {
+    BinTree result(left);
+    result += right;
+    return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 //PRIVATE
 
 void BinTree::delNode(Node* n) {
@@ -87,17 +195,64 @@ void BinTree::delNode(Node* n) {
     }
 }
 
-const std::pair<bool, uint32_t>
+bool BinTree::remove(Node* n2d) {
+    Node* temp;
+
+    if (n2d == NULL)
+        return false;
+    else if (n2d->left == NULL && n2d->right == NULL) //n2d is a leaf
+    {
+        temp = n2d;
+        n2d = NULL;
+    }
+    else if (n2d->left == NULL) //n2d has a right subtree, no left
+    {
+        temp = n2d;
+        n2d = temp->right;
+    }
+    else if (n2d->right == NULL) //n2d has a left subtree, no left
+    {
+        temp = n2d;
+        n2d = temp->left;
+    }
+    else //n2d has both a left and a right subtree
+    {
+        temp = n2d->left; //move 1 node left
+        Node* prev = NULL;
+
+          //move right as far as possible
+        while (temp->right != NULL)
+        {
+            prev = temp;
+            temp = temp->right;
+        }
+
+        n2d->data = temp->data;
+
+        if (prev == NULL) //temp did not move
+            n2d->left = temp->left;
+        else
+            prev->right = temp->left;
+    }
+
+    delete temp;
+    nodeCount--;
+    return true;
+}
+
+const std::pair<Node*, uint32_t>
     BinTree::search(const int& data, Node* n, uint32_t level) const {
     
 	if (data == n->data)
-		return std::make_pair(true, level);
-	else if (data < n->data && n->left != NULL)
+		return std::make_pair(n, level);
+	else if (data < n->data && n->left != NULL) //data is too big
 		search(data, n->left, level + 1);
-	else if (data > n->data && n->right != NULL)
+	else if (data > n->data && n->right != NULL) //data is too small
 		search(data, n->right, level + 1);
-	else
-		return std::make_pair(false, 0);
+	else //data does not exist
+		return std::make_pair(nullptr, level);
+      //don't know why, but it doesn't allow me to cast NULL, it seems to need
+      //nullptr
 }
 
 /**@brief traverses the tree starting at the left and working right
@@ -227,163 +382,6 @@ void BinTree::postOrder(void (*func)(const int&, uint32_t),
         postOrder(func, n->right, level + 1);
         func(n->data, 0);
     }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//PUBLIC
-
-///@brief Return the number of nodes in the tree
-uint32_t BinTree::count() const {
-    return nodeCount;
-}
-
-void BinTree::add(const int& data) {
-    Node* nn = new Node;
-    nn->data = data;
-
-    if (root == NULL)
-        root = nn;
-    else
-    {
-        Node* current = root;
-        Node* parent;
-
-          //find the parent of nn
-        while (current != NULL)
-        {
-            parent = current;
-            if (nn->data < current->data)
-                current = current->left;
-            else if (nn->data > current->data)
-                current = current->right;
-            else
-            {
-                delete nn;
-                return;
-            }
-        }
-
-          //adjust parent pointers
-        if (nn->data < parent->data)
-            parent->left = nn;
-        else
-            parent->right = nn;
-    }
-    nodeCount++;
-}
-
-const bool BinTree::remove(const int& data) {
-    if (root == NULL)
-        return false;
-
-    Node* current = root;
-    Node* prev;
-
-      //find the node to delete
-    while (current != NULL && current->data != data)
-    {
-        prev = current;
-        if (data < current->data)
-            current = current->left;
-        else
-            current = current->right;
-    }
-    
-    if (current == NULL)  //the value does not exist
-        return false;
-    else if (current->left == NULL && current->right == NULL)
-        delete current;  //current is a leaf
-    else if (current->left != NULL && current->right != NULL)
-    {   //current has a left and right subtree
-        Node* temp;
-        temp = current->left;  //move 1 to the left
-        
-        //move right until NULL is found
-        while (temp->right->right != NULL)
-            temp = temp->right;
-          //NOTE: temp points to the parent of the replacement data
-
-          //assign that value to current and delete that node
-        current->data = temp->right->data;
-        delete temp->right;
-        temp->right = NULL;
-        
-        nodeCount--;
-        return true;
-    }
-    else if (current->right == NULL)  //current has left subtree
-    {
-        if (prev->left == current)
-            prev->left = current->left;
-        else
-            prev->right = current->left;
-        delete current;
-    }
-    else  //current has right subtree
-    {
-        if (prev->left == current)
-            prev->left = current->right;
-        else
-            prev->right = current->left;
-        delete current;
-    }
-
-    if (prev->left == current)
-        prev->left = NULL;
-    else
-        prev->right = NULL;
-
-    nodeCount--;
-    return true;
-}
-
-///@brief performs a simple binary search
-///@param data the data to search for
-const std::pair<bool, uint32_t> BinTree::search(const int& data) const {
-    return search(data, root, 0);
-}
-
-void BinTree::traverse(Traverse order, void (*func)(const int&, uint32_t)) const {
-    switch (order) {
-    case IN_ORDER:
-        inOrder(func, root, 0);
-        break;
-    case PRE_ORDER:
-        preOrder(func, root, 0);
-        break;
-    case POST_ORDER:
-        postOrder(func, root, 0);
-        break;
-    }
-}
-
-void BinTree::erase() {
-    delNode(root);
-    root = NULL;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//COPY
-
-BinTree::BinTree(const BinTree& source) {
-    root = NULL;
-    nodeCount = 0;
-    source.preOrder(source.root, *this);
-}
-
-void BinTree::operator=(const BinTree& right) {
-    this->erase();  //erase the tree if it exists
-    right.preOrder(right.root, *this);
-}
-
-void BinTree::operator+=(const BinTree& right) {
-    right.preOrder(right.root, *this);
-}
-
-BinTree operator+(const BinTree& left, const BinTree& right) {
-    BinTree result(left);
-    result += right;
-    return result;
 }
 
 #endif // BINTREE_HH

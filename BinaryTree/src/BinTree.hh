@@ -10,60 +10,74 @@
 #include <cstddef>
 #include <cstdarg>
 
+template<class dataType>
+class BinTree;
+
+template<class DataType>
+BinTree<DataType> operator+(const BinTree<DataType>& left,
+                            const BinTree<DataType>& right);
+
+template<class DataType>
 struct Node {
-    int data;
+    DataType data;
     Node* left = NULL;
     Node* right = NULL;
 };
 
-/**@brief A binary tree template
- */
+enum TreeTraverse {IN_ORDER, PRE_ORDER, POST_ORDER};
+
+///@brief A binary tree template
+template<class DataType>
 class BinTree {
 private:
-    Node* root;
+    Node<DataType>* root;
     uint32_t nodeCount;
-    void delNode(Node* n);
-    bool remove(Node* n2d);
-    const std::pair<Node*, uint32_t>
-        search(const int& data, Node* n, uint32_t level) const;
-    static void inOrder(void (*func)(const int&, uint32_t),
-                        Node* n, uint32_t level);
-    static void preOrder(void (*func)(const int&, uint32_t),
-                         Node* n, uint32_t level);
-    static void preOrder(Node* n, BinTree& dest);
-    static void postOrder(void (*func)(const int&, uint32_t),
-                          Node* n, uint32_t level);
+    void delNode(Node<DataType>* n);
+    bool remove(Node<DataType>* n2d);
+    
+    const std::pair<Node<DataType>*, uint32_t>
+    search(const DataType& data, Node<DataType>* n, uint32_t level) const;
+    
+    static void inOrder(void (*func)(const DataType&, uint32_t),
+                        Node<DataType>* n, uint32_t level);
+    static void preOrder(void (*func)(const DataType&, uint32_t),
+                         Node<DataType>* n, uint32_t level);
+    static void preOrder(Node<DataType>* n, BinTree<DataType>& dest);
+    static void postOrder(void (*func)(const DataType&, uint32_t),
+                          Node<DataType>* n, uint32_t level);
 public:
-    enum Traverse {IN_ORDER, PRE_ORDER, POST_ORDER};
     BinTree();
     BinTree(uint32_t argCount, ...); ///< Starting value constructor
     ~BinTree();
-      //MANAGE DATA//////////////////////////////////////////////
+    //MANAGE DATA//////////////////////////////////////////////
     uint32_t count() const; ///< get the number of items in the tree
-    void add(const int& data);
-    const bool remove(const int& data);
-    const std::pair<bool, uint32_t> search(const int& data) const;
-    void traverse(Traverse order, void (*func)(const int&, uint32_t)) const;
+    void add(const DataType& data);
+    const bool remove(const DataType& data);
+    const std::pair<bool, uint32_t> search(const DataType& data) const;
+    void traverse(TreeTraverse order, void (*func)(const DataType&, uint32_t)) const;
     void erase();
-      //COPY/////////////////////////////////////////////////////
-    BinTree(const BinTree& source); ///< copy constructor
-    void operator=(const BinTree& right);
-    void operator+=(const BinTree& right);
-    friend BinTree operator+(const BinTree& left, const BinTree& right);
+    //COPY/////////////////////////////////////////////////////
+    BinTree(const BinTree<DataType>& source); ///< copy constructor
+    void operator=(const BinTree<DataType>& right);
+    void operator+=(const BinTree<DataType>& right);
+    friend BinTree<DataType> operator+ <>(const BinTree<DataType>& left,
+                                          const BinTree<DataType>& right);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-BinTree::BinTree() {
+template<class DataType>
+BinTree<DataType>::BinTree() {
     root = NULL;
     nodeCount = 0;
 }
 
-BinTree::BinTree(uint32_t argCount, ...) {
+template<class DataType>
+BinTree<DataType>::BinTree(uint32_t argCount, ...) {
     root = NULL;
     nodeCount = 0;
-      ///////////////////////////////////
+    ///////////////////////////////////
     va_list args;
     va_start(args, argCount);
     for (uint32_t i = 0; i < argCount; i++)
@@ -71,7 +85,8 @@ BinTree::BinTree(uint32_t argCount, ...) {
     va_end (args);
 }
 
-BinTree::~BinTree() {
+template<class DataType>
+BinTree<DataType>::~BinTree() {
     delNode(root);
 }
 
@@ -79,22 +94,24 @@ BinTree::~BinTree() {
 //PUBLIC
 
 ///@brief Return the number of nodes in the tree
-uint32_t BinTree::count() const {
+template<class DataType>
+uint32_t BinTree<DataType>::count() const {
     return nodeCount;
 }
 
-void BinTree::add(const int& data) {
-    Node* nn = new Node;
+template<class DataType>
+void BinTree<DataType>::add(const DataType& data) {
+    Node<DataType>* nn = new Node<DataType>;
     nn->data = data;
 
     if (root == NULL)
         root = nn;
     else
     {
-        Node* current = root;
-        Node* parent;
+        Node<DataType>* current = root;
+        Node<DataType>* parent;
 
-          //find the parent of nn
+        //find the parent of nn
         while (current != NULL)
         {
             parent = current;
@@ -109,7 +126,7 @@ void BinTree::add(const int& data) {
             }
         }
 
-          //adjust parent pointers
+        //adjust parent pointers
         if (nn->data < parent->data)
             parent->left = nn;
         else
@@ -118,28 +135,31 @@ void BinTree::add(const int& data) {
     nodeCount++;
 }
 
-const bool BinTree::remove(const int& data) {
-      //find the node to delete and delete it
+template<class DataType>
+const bool BinTree<DataType>::remove(const DataType& data) {
+    //find the node to delete and delete it
     return remove(search(data, root, 0).first);
 }
 
 /**@brief performs a simple binary search
-   @param data the data to search for
-   @return an std:: pair<bool, uint32_t> of whether the data exists and the
-           level that the data is on
+@param data the data to search for
+@return an std:: pair<bool, uint32_t> of whether the data exists and the
+level that the data is on
 
 If the data was not found, the first value is false. Disregard the level.\n
 The level index starts at 0
 */
-const std::pair<bool, uint32_t> BinTree::search(const int& data) const {
-    const std::pair<Node*, uint32_t> result =  search(data, root, 0);
+template<class DataType>
+const std::pair<bool, uint32_t> BinTree<DataType>::search(const DataType& data) const {
+    const std::pair<Node<DataType>*, uint32_t> result =  search(data, root, 0);
     if (result.first == NULL)
         return std::make_pair(false, 0);
     else
         return std::make_pair(true, result.second);
 }
 
-void BinTree::traverse(Traverse order, void (*func)(const int&, uint32_t)) const {
+template<class DataType>
+void BinTree<DataType>::traverse(TreeTraverse order, void (*func)(const DataType&, uint32_t)) const {
     switch (order) {
     case IN_ORDER:
         inOrder(func, root, 0);
@@ -153,39 +173,43 @@ void BinTree::traverse(Traverse order, void (*func)(const int&, uint32_t)) const
     }
 }
 
-void BinTree::erase() {
+template<class DataType>
+void BinTree<DataType>::erase() {
     delNode(root);
     root = NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //COPY
-
-BinTree::BinTree(const BinTree& source) {
+template<class DataType>
+BinTree<DataType>::BinTree(const BinTree<DataType>& source) {
     root = NULL;
     nodeCount = 0;
     source.preOrder(source.root, *this);
 }
 
-void BinTree::operator=(const BinTree& right) {
+template<class DataType>
+void BinTree<DataType>::operator=(const BinTree<DataType>& right) {
     this->erase();  //erase the tree if it exists
     right.preOrder(right.root, *this);
 }
 
-void BinTree::operator+=(const BinTree& right) {
+template<class DataType>
+void BinTree<DataType>::operator+=(const BinTree<DataType>& right) {
     right.preOrder(right.root, *this);
 }
 
-BinTree operator+(const BinTree& left, const BinTree& right) {
-    BinTree result(left);
+template<class DataType>
+BinTree<DataType> operator+(const BinTree<DataType>& left, const BinTree<DataType>& right) {
+    BinTree<DataType> result(left);
     result += right;
     return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //PRIVATE
-
-void BinTree::delNode(Node* n) {
+template<class DataType>
+void BinTree<DataType>::delNode(Node<DataType>* n) {
     if (n != NULL)
     {
         delNode(n->left);
@@ -195,8 +219,9 @@ void BinTree::delNode(Node* n) {
     }
 }
 
-bool BinTree::remove(Node* n2d) {
-    Node* temp;
+template<class DataType>
+bool BinTree<DataType>::remove(Node<DataType>* n2d) {
+    Node<DataType>* temp;
 
     if (n2d == NULL)
         return false;
@@ -218,9 +243,9 @@ bool BinTree::remove(Node* n2d) {
     else //n2d has both a left and a right subtree
     {
         temp = n2d->left; //move 1 node left
-        Node* prev = NULL;
+        Node<DataType>* prev = NULL;
 
-          //move right as far as possible
+        //move right as far as possible
         while (temp->right != NULL)
         {
             prev = temp;
@@ -240,8 +265,9 @@ bool BinTree::remove(Node* n2d) {
     return true;
 }
 
-const std::pair<Node*, uint32_t>
-    BinTree::search(const int& data, Node* n, uint32_t level) const {
+template<class DataType>
+const std::pair<Node<DataType>*, uint32_t>
+BinTree<DataType>::search(const DataType& data, Node<DataType>* n, uint32_t level) const {
     
 	if (data == n->data)
 		return std::make_pair(n, level);
@@ -251,41 +277,42 @@ const std::pair<Node*, uint32_t>
 		search(data, n->right, level + 1);
 	else //data does not exist
 		return std::make_pair(nullptr, level);
-      //don't know why, but it doesn't allow me to cast NULL, it seems to need
-      //nullptr
+    //don't know why, but it doesn't allow me to cast NULL, it seems to need
+    //nullptr
 }
 
 /**@brief traverses the tree starting at the left and working right
-   @param (*func)(const int& data) The function to run on each node
-   @param the level of each node, root = 0
+@param (*func)(const DataType& data) The function to run on each node
+@param the level of each node, root = 0
 
-   1. Traverse left subtree
-   2. Visit node
-   3. Traverse right subtree
+1. Traverse left subtree
+2. Visit node
+3. Traverse right subtree
 
-   A tree set up like this (* has a value, x is NULL)...
+A tree set up like this (* has a value, x is NULL)...
 
-   0|     *
-   ||   /   \
-   1|  *     *
-   || / \   / \
-   2|x   *  x  *
-   ||   / \   / \
-   3|  *   *  x  *
+0|     *
+||   /   \
+1|  *     *
+|| / \   / \
+2|x   *  x  *
+||   / \   / \
+3|  *   *  x  *
 
-   ...will be traversed like this (numbers are the order in which the
-   function is run).
+...will be traversed like this (numbers are the order in which the
+function is run).
 
-   0|     5
-   ||   /   \
-   1|  1     6
-   || / \   / \
-   2|x   3  x  7
-   ||   / \   / \
-   3|  2   4  x  8
+0|     5
+||   /   \
+1|  1     6
+|| / \   / \
+2|x   3  x  7
+||   / \   / \
+3|  2   4  x  8
 */
-void BinTree::inOrder(void (*func)(const int&, uint32_t),
-                      Node* n, uint32_t level) {
+template<class DataType>
+void BinTree<DataType>::inOrder(void (*func)(const DataType&, uint32_t),
+                                 Node<DataType>* n, uint32_t level) {
     if (n != NULL)
     {
         inOrder(func, n->left, level + 1);
@@ -295,37 +322,38 @@ void BinTree::inOrder(void (*func)(const int&, uint32_t),
 }
 
 /**@brief traverses the tree visiting parents, left children, and right
-   children in that order
-   @param (*func)(const int&) The function to run on each node
-   @param the level of each node, root = 0
+children in that order
+@param (*func)(const DataType&) The function to run on each node
+@param the level of each node, root = 0
 
-   1. Visit node
-   2. Traverse left subtree
-   3. Traverse right subtree
+1. Visit node
+2. Traverse left subtree
+3. Traverse right subtree
 
-   A tree set up like this (* has a value, x is NULL)...
+A tree set up like this (* has a value, x is NULL)...
 
-   0|     *
-   ||   /   \
-   1|  *     *
-   || / \   / \
-   2|x   *  x  *
-   ||   / \   / \
-   3|  *   *  x  *
+0|     *
+||   /   \
+1|  *     *
+|| / \   / \
+2|x   *  x  *
+||   / \   / \
+3|  *   *  x  *
 
-   ...will be traversed like this (numbers are the order in which the
-   function is run).
+...will be traversed like this (numbers are the order in which the
+function is run).
 
-   0|     1
-   ||   /   \
-   1|  2     6
-   || / \   / \
-   2|x   3  x  7
-   ||   / \   / \
-   3|  4   5  x  8
+0|     1
+||   /   \
+1|  2     6
+|| / \   / \
+2|x   3  x  7
+||   / \   / \
+3|  4   5  x  8
 */
-void BinTree::preOrder(void (*func)(const int&, uint32_t),
-                       Node* n, uint32_t level) {
+template<class DataType>
+void BinTree<DataType>::preOrder(void (*func)(const DataType&, uint32_t),
+                                  Node<DataType>* n, uint32_t level) {
     if (n != NULL)
     {
         func(n->data, 0);
@@ -334,7 +362,8 @@ void BinTree::preOrder(void (*func)(const int&, uint32_t),
     }
 }
 
-void BinTree::preOrder(Node* n, BinTree& dest) {
+template<class DataType>
+void BinTree<DataType>::preOrder(Node<DataType>* n, BinTree<DataType>& dest) {
     
     if (n != NULL)
     {
@@ -345,37 +374,38 @@ void BinTree::preOrder(Node* n, BinTree& dest) {
 }
 
 /**@brief traverses the tree visiting left children, right
-   children, and parents in that order
-   @param (*func)(const int&) The function to run on each node
-   @param the level of each node, root = 0
+children, and parents in that order
+@param (*func)(const DataType&) The function to run on each node
+@param the level of each node, root = 0
 
-   1. Traverse left subtree
-   2. Traverse right subtree
-   3. Visit node
+1. Traverse left subtree
+2. Traverse right subtree
+3. Visit node
 
-   A tree set up like this (* has a value, x is NULL)...
+A tree set up like this (* has a value, x is NULL)...
 
-   0|     *
-   ||   /   \
-   1|  *   *
-   || / \   / \
-   2|x   *  x  *
-   ||   / \   / \
-   3|  *   *  x  *
+0|     *
+||   /   \
+1|  *   *
+|| / \   / \
+2|x   *  x  *
+||   / \   / \
+3|  *   *  x  *
 
-   ...will be traversed like this (numbers are the order in which the
-   function is run).
+...will be traversed like this (numbers are the order in which the
+function is run).
 
-   0|     5
-   ||   /   \
-   1|   4    8
-   || / \   / \
-   2|x   3  x  7
-   ||   / \   / \
-   3|  1   2  x  6
+0|     5
+||   /   \
+1|   4    8
+|| / \   / \
+2|x   3  x  7
+||   / \   / \
+3|  1   2  x  6
 */
-void BinTree::postOrder(void (*func)(const int&, uint32_t),
-                        Node* n, uint32_t level) {
+template<class DataType>
+void BinTree<DataType>::postOrder(void (*func)(const DataType&, uint32_t),
+                                  Node<DataType>* n, uint32_t level) {
     if (n != NULL)
     {
         postOrder(func, n->left, level + 1);

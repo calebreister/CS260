@@ -21,27 +21,34 @@ struct Node {
 class BinTree {
 private:
     Node* root;
+    uint32_t nodeCount;
     void delNode(Node* n);
-    const bool recursiveSearch(const int& data, Node* n);
-    static void inOrder(void (*func)(int), Node* n, uint32_t level);
-    static void preOrder(void (*func)(int), Node* n, uint32_t level);
-    static void postOrder(void (*func)(int), Node* n, uint32_t level);
+    const std::pair<bool, uint32_t>
+        search(const int& data, Node* n, uint32_t level) const;
+    static void inOrder(void (*func)(const int&, uint32_t),
+                        Node* n, uint32_t level);
+    static void preOrder(void (*func)(const int&, uint32_t),
+                         Node* n, uint32_t level);
+    static void preOrder(Node* n, BinTree& dest);
+    static void postOrder(void (*func)(const int&, uint32_t),
+                          Node* n, uint32_t level);
 public:
     enum Traverse {IN_ORDER, PRE_ORDER, POST_ORDER};
     BinTree();
     BinTree(uint32_t argCount, ...); ///< Starting value constructor
     ~BinTree();
       //MANAGE DATA//////////////////////////////////////////////
-    uint32_t count(); ///< get the number of items in the tree
-    void insert(const int& data);
+    uint32_t count() const; ///< get the number of items in the tree
+    void add(const int& data);
     const bool remove(const int& data);
-    const bool search(const int& data);
-    void traverse(Traverse order, void (*func)(int));
+    const std::pair<bool, uint32_t> search(const int& data) const;
+    void traverse(Traverse order, void (*func)(const int&, uint32_t)) const;
+    void erase();
       //COPY/////////////////////////////////////////////////////
     BinTree(const BinTree& source); ///< copy constructor
     void operator=(const BinTree& right);
     void operator+=(const BinTree& right);
-    BinTree operator+(const BinTree& right);
+    friend BinTree operator+(const BinTree& left, const BinTree& right);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -49,20 +56,18 @@ public:
 
 BinTree::BinTree() {
     root = NULL;
+    nodeCount = 0;
 }
 
 BinTree::BinTree(uint32_t argCount, ...) {
     root = NULL;
+    nodeCount = 0;
       ///////////////////////////////////
     va_list args;
     va_start(args, argCount);
     for (uint32_t i = 0; i < argCount; i++)
-        this->insert(va_arg(args, int));
+        this->add(va_arg(args, int));
     va_end (args);
-}
-
-//COPY CONSTRUCTOR
-BinTree::BinTree(const BinTree& source) {
 }
 
 BinTree::~BinTree() {
@@ -78,18 +83,21 @@ void BinTree::delNode(Node* n) {
         delNode(n->left);
         delNode(n->right);
         delete n;
+        nodeCount--;
     }
 }
 
-const bool BinTree::recursiveSearch(const int& data, Node* n) {
+const std::pair<bool, uint32_t>
+    BinTree::search(const int& data, Node* n, uint32_t level) const {
+    
 	if (data == n->data)
-		return true;
+		return std::make_pair(true, level);
 	else if (data < n->data && n->left != NULL)
-		recursiveSearch(data, n->left);
+		search(data, n->left, level + 1);
 	else if (data > n->data && n->right != NULL)
-		recursiveSearch(data, n->right);
+		search(data, n->right, level + 1);
 	else
-		return false;
+		return std::make_pair(false, 0);
 }
 
 /**@brief traverses the tree starting at the left and working right
@@ -121,18 +129,19 @@ const bool BinTree::recursiveSearch(const int& data, Node* n) {
    ||   / \   / \
    3|  2   4  x  8
 */
-void BinTree::inOrder(void (*func)(int), Node* n, uint32_t level) {
+void BinTree::inOrder(void (*func)(const int&, uint32_t),
+                      Node* n, uint32_t level) {
     if (n != NULL)
     {
         inOrder(func, n->left, level + 1);
-        func(n->data);
+        func(n->data, level);
         inOrder(func, n->right, level + 1);
     }
 }
 
 /**@brief traverses the tree visiting parents, left children, and right
    children in that order
-   @param (*func)(int) The function to run on each node
+   @param (*func)(const int&) The function to run on each node
    @param the level of each node, root = 0
 
    1. Visit node
@@ -160,18 +169,29 @@ void BinTree::inOrder(void (*func)(int), Node* n, uint32_t level) {
    ||   / \   / \
    3|  4   5  x  8
 */
-void BinTree::preOrder(void (*func)(int), Node* n, uint32_t level) {
+void BinTree::preOrder(void (*func)(const int&, uint32_t),
+                       Node* n, uint32_t level) {
     if (n != NULL)
     {
-        func(n->data);
+        func(n->data, 0);
         preOrder(func, n->left, level + 1);
         preOrder(func, n->right, level + 1);
     }
 }
 
+void BinTree::preOrder(Node* n, BinTree& dest) {
+    
+    if (n != NULL)
+    {
+        dest.add(n->data);
+        preOrder(n->left, dest);
+        preOrder(n->right, dest);
+    }
+}
+
 /**@brief traverses the tree visiting left children, right
    children, and parents in that order
-   @param (*func)(int) The function to run on each node
+   @param (*func)(const int&) The function to run on each node
    @param the level of each node, root = 0
 
    1. Traverse left subtree
@@ -199,12 +219,13 @@ void BinTree::preOrder(void (*func)(int), Node* n, uint32_t level) {
    ||   / \   / \
    3|  1   2  x  6
 */
-void BinTree::postOrder(void (*func)(int), Node* n, uint32_t level) {
+void BinTree::postOrder(void (*func)(const int&, uint32_t),
+                        Node* n, uint32_t level) {
     if (n != NULL)
     {
         postOrder(func, n->left, level + 1);
         postOrder(func, n->right, level + 1);
-        func(n->data);
+        func(n->data, 0);
     }
 }
 
@@ -212,18 +233,16 @@ void BinTree::postOrder(void (*func)(int), Node* n, uint32_t level) {
 //PUBLIC
 
 ///@brief Return the number of nodes in the tree
-uint32_t BinTree::count() {
+uint32_t BinTree::count() const {
+    return nodeCount;
 }
 
-void BinTree::insert(const int& data) {
+void BinTree::add(const int& data) {
     Node* nn = new Node;
     nn->data = data;
 
     if (root == NULL)
-    {
         root = nn;
-        return;
-    }
     else
     {
         Node* current = root;
@@ -250,6 +269,7 @@ void BinTree::insert(const int& data) {
         else
             parent->right = nn;
     }
+    nodeCount++;
 }
 
 const bool BinTree::remove(const int& data) {
@@ -258,8 +278,8 @@ const bool BinTree::remove(const int& data) {
 
     Node* current = root;
     Node* prev;
-    Node* temp;
 
+      //find the node to delete
     while (current != NULL && current->data != data)
     {
         prev = current;
@@ -269,41 +289,61 @@ const bool BinTree::remove(const int& data) {
             current = current->right;
     }
     
-    if (current == NULL)
+    if (current == NULL)  //the value does not exist
         return false;
+    else if (current->left == NULL && current->right == NULL)
+        delete current;  //current is a leaf
     else if (current->left != NULL && current->right != NULL)
-    {   //both left and right subtree
-        temp = current->left;
-
-        while (temp->right != NULL)  //find a node to use as the replacement
+    {   //current has a left and right subtree
+        Node* temp;
+        temp = current->left;  //move 1 to the left
+        
+        //move right until NULL is found
+        while (temp->right->right != NULL)
             temp = temp->right;
+          //NOTE: temp points to the parent of the replacement data
 
-        int tempData = temp->data;
-        remove(temp->data);
-        current->data = tempData;
+          //assign that value to current and delete that node
+        current->data = temp->right->data;
+        delete temp->right;
+        temp->right = NULL;
+        
+        nodeCount--;
+        return true;
     }
-    else if (current->right == NULL)  //no right subtree
+    else if (current->right == NULL)  //current has left subtree
     {
-        temp = current;
-        prev->right = current->left;
-        delete temp;
+        if (prev->left == current)
+            prev->left = current->left;
+        else
+            prev->right = current->left;
+        delete current;
     }
-    else if (current->left == NULL)  //no left subtree
+    else  //current has right subtree
     {
-        temp = current;
-        prev->left = current->right;
-        delete temp;
+        if (prev->left == current)
+            prev->left = current->right;
+        else
+            prev->right = current->left;
+        delete current;
     }
+
+    if (prev->left == current)
+        prev->left = NULL;
+    else
+        prev->right = NULL;
+
+    nodeCount--;
     return true;
 }
 
 ///@brief performs a simple binary search
 ///@param data the data to search for
-const bool BinTree::search(const int& data) {
-    return recursiveSearch(data, root);
+const std::pair<bool, uint32_t> BinTree::search(const int& data) const {
+    return search(data, root, 0);
 }
 
-void BinTree::traverse(Traverse order, void (*func)(int)) {
+void BinTree::traverse(Traverse order, void (*func)(const int&, uint32_t)) const {
     switch (order) {
     case IN_ORDER:
         inOrder(func, root, 0);
@@ -317,17 +357,33 @@ void BinTree::traverse(Traverse order, void (*func)(int)) {
     }
 }
 
+void BinTree::erase() {
+    delNode(root);
+    root = NULL;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //COPY
 
+BinTree::BinTree(const BinTree& source) {
+    root = NULL;
+    nodeCount = 0;
+    source.preOrder(source.root, *this);
+}
+
 void BinTree::operator=(const BinTree& right) {
+    this->erase();  //erase the tree if it exists
+    right.preOrder(right.root, *this);
 }
 
 void BinTree::operator+=(const BinTree& right) {
+    right.preOrder(right.root, *this);
 }
 
-BinTree BinTree::operator+(const BinTree& right) {
-
+BinTree operator+(const BinTree& left, const BinTree& right) {
+    BinTree result(left);
+    result += right;
+    return result;
 }
 
 #endif // BINTREE_HH

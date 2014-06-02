@@ -37,7 +37,7 @@ private:
     bool remove(Node<DataType>** n2d);
     
     const std::pair<Node<DataType>**, uint32_t>
-    static search(const DataType& data, Node<DataType>** n, uint32_t level);
+    search(const DataType& data, Node<DataType>*& n, uint32_t level) const;
     
     static void inOrder(void (*func)(const DataType&, uint32_t),
                         Node<DataType>* n, uint32_t level);
@@ -157,7 +157,7 @@ void BinTree<DataType>::insert(std::initializer_list<DataType> data) {
 */
 template<class DataType>
 const bool BinTree<DataType>::remove(const DataType& data) {
-    Node<DataType>** n2d = search(data, &root, 0).first;
+    Node<DataType>** n2d = search(data, root, 0).first;
     if (*n2d == NULL)
         return false;
     return remove(n2d);
@@ -173,7 +173,7 @@ const bool BinTree<DataType>::remove(const DataType& data) {
 */
 template<class DataType>
 const std::pair<bool, uint32_t> BinTree<DataType>::search(const DataType& data) {
-    const auto result = search(data, &root, 0); //infers type during compile
+    const auto result = search(data, root, 0); //infers type during compile
     if (*(result.first) == NULL)
         return std::make_pair(false, 0);
     else
@@ -344,20 +344,22 @@ bool BinTree<DataType>::remove(Node<DataType>** n2d) {
    @param data the data to look for
    @param n the starting node
    @param level the number of branches from root (starts at 0)
-   @return a double pointer to the Node with the data, the level of that node
+   @return a pointer, passed by reference to the Node with the data,
+           the level of that node
 
 Disregard the level if the returned double pointer is NULL
 */
 template<class DataType>
 const std::pair<Node<DataType>**, uint32_t>
-BinTree<DataType>::search(const DataType& data, Node<DataType>** n, uint32_t level) {
-    
-	if (data == (*n)->data)
-		return std::make_pair(n, level);
-	else if (data < (*n)->data && (*n)->left != NULL) //data is too big
-		search(data, &(*n)->left, level + 1);
-	else if (data > (*n)->data && (*n)->right != NULL) //data is too small
-		search(data, &(*n)->right, level + 1);
+BinTree<DataType>::search(const DataType& data, Node<DataType>*& n,
+                          uint32_t level) const
+{    
+	if (data == n->data)
+		return std::make_pair(&n, level);
+	else if (data < n->data && n->left != NULL) //data is too big
+		search(data, n->left, level + 1);
+	else if (data > n->data && n->right != NULL) //data is too small
+		search(data, n->right, level + 1);
 	else //data does not exist
 		return std::make_pair(nullptr, level);
     //don't know why, but it doesn't allow me to put NULL here,

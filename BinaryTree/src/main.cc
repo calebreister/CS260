@@ -9,9 +9,9 @@ void print(const int& x, uint32_t l) {
 }
 
 int main() {
-    BinTree<int> t(5, 2, -2, 3, 1, 0);
+    BinTree<int> t {1,2,10,5,4,3};
     t.traverse(IN_ORDER, print);
     cout << endl;
-    t.remove(2);
+    cout << t.search(10).first << " " << t.search(10).second << endl;
     t.traverse(IN_ORDER, print);
 }

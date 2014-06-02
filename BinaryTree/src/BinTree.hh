@@ -158,6 +158,8 @@ void BinTree<DataType>::insert(std::initializer_list<DataType> data) {
 template<class DataType>
 const bool BinTree<DataType>::remove(const DataType& data) {
     Node<DataType>** n2d = search(data, &root, 0).first;
+    if (*n2d == NULL)
+        return false;
     return remove(n2d);
 }
 
